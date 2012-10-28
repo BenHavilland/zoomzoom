@@ -45,50 +45,62 @@
     ToolBarView = Backbone.View.extend({
       tagName: "div",
       className: "toolbar",
-      template: "<p>This is just a local template doc  that will be \    changed in the near future.<p/> \    <p>Once we define out models we will add list items here like below.</p>    ",
+      events: {
+        'click .add_vehicle': 'createVehicle'
+      },
+      template: "<h3 class='vehicles'>Vehicles</h3> <span class='count'></span>    <ul class='vehicles'></ul>    <input type='text' class='name' placeholder='Type new vehicle name'></input>    <br />    <button class='add_vehicle'>Add Vehicle</button>    ",
       initialize: function() {
         var vehiclesView;
         $('body').append(this.render().el);
         vehiclesView = new VehiclesView;
-        return $(this.el).append(vehiclesView.render().el);
+        $(this.el).append(vehiclesView.render().el);
+        this.input_vehicle_name = this.$('input.name');
+        return this;
       },
       render: function() {
         $(this.el).html(this.template);
+        return this;
+      },
+      createVehicle: function() {
+        if (!this.input_vehicle_name.val()) return;
+        Vehicles.create({
+          name: this.input_vehicle_name.val()
+        });
+        this.input_vehicle_name.val('');
         return this;
       }
     });
     VehicleView = Backbone.View.extend({
       tagName: "li",
       className: "vehicle",
-      template: "Y{{year}} M{{make}} M{{model}}",
+      template: "{{vehicle.titlel}}",
       render: function() {
-        $(this.el).html(this.template);
+        $(this.el).html(this.model.get('name'));
+        console.log(this.model);
         return this;
       }
     });
     VehiclesView = Backbone.View.extend({
-      tagName: "div",
-      className: "vehicles",
-      template: "<h3>Cars</h3>      <ul>        <li>2001 Volvo V70 T5</li>        <li>1991 BMW 325ic</li>        <li>1976 Ford F350</li>      </ul>      <h3>Motorcycles</h3>      <ul>        <li>1980 Honda CB750</li>        <li>1980 Honda CM400T</li>        <li>1982 Honda CM250C</li>      </ul>",
+      el: $("div.toolbar"),
       initialize: function() {
+        Vehicles.bind('add', this.addOne, this);
+        Vehicles.bind('all', this.render, this);
         Vehicles.bind('reset', this.addAll, this);
         return Vehicles.fetch();
       },
       render: function() {
-        $(this.el).html(this.template);
+        $("span.count").html("(" + Vehicles.length + ")");
         return this;
       },
       addOne: function(vehicle) {
         var vehicleView;
-        console.log('here is one vehicle');
         vehicleView = new VehicleView({
           model: vehicle
         });
-        $(this.el).append(vehicleView.render().el);
+        $("ul.vehicles").append(vehicleView.render().el);
         return this;
       },
       addAll: function() {
-        console.log('polling all');
         Vehicles.each(this.addOne);
         return this;
       }

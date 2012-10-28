@@ -30,22 +30,37 @@ $ ->
 
   # Views
   ToolBarView = Backbone.View.extend
+
     tagName: "div"
     className: "toolbar"
 
+    events:
+      'click .add_vehicle': 'createVehicle'
+
     # will change to real template shortly
-    template: "<p>This is just a local template doc  that will be \
-    changed in the near future.<p/> \
-    <p>Once we define out models we will add list items here like below.</p>
+    template: "<h3 class='vehicles'>Vehicles</h3> <span class='count'></span>
+    <ul class='vehicles'></ul>
+    <input type='text' class='name' placeholder='Type new vehicle name'></input>
+    <br />
+    <button class='add_vehicle'>Add Vehicle</button>
     "
 
     initialize: ->
       $('body').append @render().el
       vehiclesView = new VehiclesView
       $(@el).append vehiclesView.render().el
+      @input_vehicle_name = @$('input.name')
+      @
 
     render: ->
       $(@el).html @template
+      @
+
+    createVehicle: ->
+      if !@input_vehicle_name.val()
+        return
+      Vehicles.create({name: @input_vehicle_name.val()})
+      @input_vehicle_name.val('')
       @
 
   VehicleView = Backbone.View.extend
@@ -53,50 +68,35 @@ $ ->
     className: "vehicle"
 
     # will change to real template shortly
-    template: "Y{{year}} M{{make}} M{{model}}"
+    template: "{{vehicle.titlel}}"
 
     render: ->
-      $(@el).html @template
+      $(@el).html @model.get 'name' # this will change once we activate the templates
+      console.log @model
       @
 
   VehiclesView = Backbone.View.extend
-    # This will become a ul tag once we hook up the model control buttons
-    tagName: "div"
-    className: "vehicles"
-
-    # Here as placeholder content until we add some vehicles
-    template: "<h3>Cars</h3>
-      <ul>
-        <li>2001 Volvo V70 T5</li>
-        <li>1991 BMW 325ic</li>
-        <li>1976 Ford F350</li>
-      </ul>
-      <h3>Motorcycles</h3>
-      <ul>
-        <li>1980 Honda CB750</li>
-        <li>1980 Honda CM400T</li>
-        <li>1982 Honda CM250C</li>
-      </ul>"
+    el: $("div.toolbar")
 
     initialize: ->
+      Vehicles.bind 'add', @addOne, @
+      Vehicles.bind 'all', @render, @
       Vehicles.bind 'reset', @addAll, @
       Vehicles.fetch()
 
     render: ->
-      $(@el).html @template
+      # update the vehicle count
+      $("span.count").html("("+Vehicles.length+")")
       @
 
     addOne: (vehicle) ->
-      console.log 'here is one vehicle'
       vehicleView = new VehicleView model:vehicle
-      $(@el).append(vehicleView.render().el);
+      $("ul.vehicles").append vehicleView.render().el
       @
 
     addAll: ->
-      console.log 'polling all'
       Vehicles.each(@addOne)
       @
-
 
   # App Loader View
   # coming soon...

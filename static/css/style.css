@@ -13,6 +13,10 @@ h1 {
   margin-bottom: 0;
 }
 
+h3.vehicles {
+  display: inline;
+}
+
 .header {
   float: left;
   width: 100%;
@@ -34,6 +38,10 @@ h1 {
   border-bottom: thin gray;
 }
 
-.vehicles {
+ul.vehicles {
   margin-bottom: 1em;
+}
+
+input.name {
+  width: 90%;
 }
