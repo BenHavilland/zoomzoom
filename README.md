@@ -27,7 +27,7 @@ Open index.html in your browser.
 * First commit
 * Basic app display works
 
-## Todo
+## To-do
 * Change static templates to html templates
 * Add vehicle delete options and other minor UI additions
 * Add models for maintenance tasks
