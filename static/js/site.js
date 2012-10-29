@@ -4,7 +4,6 @@
 
   $(function() {
     var ToolBar, ToolBarView, Vehicle, VehicleList, VehicleView, Vehicles, VehiclesView;
-    $('body').fadeIn();
     Vehicle = (function(_super) {
 
       __extends(Vehicle, _super);

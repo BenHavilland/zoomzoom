@@ -1,9 +1,6 @@
 # Load the application once the DOM is ready, using `jQuery.ready`:
 $ ->
 
-  # fade it all in
-  $('body').fadeIn();
-
   # Models
   # coming soon...
   class Vehicle extends Backbone.Model
@@ -103,3 +100,4 @@ $ ->
 
   # Create the app
   ToolBar = new ToolBarView
+
