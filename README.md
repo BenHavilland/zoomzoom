@@ -26,3 +26,9 @@ Open index.html in your browser.
 10-27-2012
 * First commit
 * Basic app display works
+
+## Todo
+* Change static templates to html templates
+* Add vehicle delete options and other minor UI additions
+* Add models for maintenance tasks
+* Add views for maintenance tasks per vehicle
