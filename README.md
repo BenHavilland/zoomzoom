@@ -11,7 +11,7 @@ Open index.html in your browser.
 
 ## Status
 
-10/28/2012
+10-28-2012
 * Created models
 * Added local storage
 * Created vehicle views
@@ -19,6 +19,6 @@ Open index.html in your browser.
 * Vehicle addition works
 * Added vehicle count
 
-10/27/2012
+10-27-2012
 * First commit
 * Basic app display works
