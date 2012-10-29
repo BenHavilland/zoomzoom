@@ -6,6 +6,10 @@ An auto/moto maintenance tracker written in coffeescript w/ backbone.js framewor
 ## Installing
     git clone git@github.com:clickyspinny/zoomzoom.git
 
+## Requirements
+* A browser that supports html 5 and local storage.  (most current browsers)
+* The coffeescript package if you want to recompile the code.  I provide a compiled copy so anybody can run it without that step.
+
 ## Running
 Open index.html in your browser.
 
