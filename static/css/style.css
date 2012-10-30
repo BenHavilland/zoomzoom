@@ -5,6 +5,7 @@ html {
 
 body {
   margin: 1em;
+  padding-bottom: 1em;
   height: 99%;
 }
 
@@ -28,19 +29,55 @@ h3.vehicles {
   float: left;
   min-width: 250px;
   width: 15%;
-  height: 75%;
   padding-right: 1em;
   border-right: solid gray;
 }
 
-.vehicle {
-  border-bottom: thin gray;
+li.vehicle {
+  border-bottom: dashed gray 1px;
+  padding: .15em 0 .15em 0;
+  margin: .15em 0 .15em 0;
+  list-style-type: none;
+  width: 100%;
+  float:left;
+}
+
+.vehicles li:hover .del {
+  display: block;
 }
 
 ul.vehicles {
-  margin-bottom: 1em;
+  width: 100%;
+  margin: 0 0 1em 0;
+  padding: 0;
 }
 
 input.name {
   width: 90%;
+  margin-top: 2em;
+}
+
+button.add_vehicle {
+  margin-bottom: 2em;
+}
+
+span.vehicle_name {
+  float: left;
+}
+
+span.del {
+  float: right;
+  display: none;
+}
+
+span.del:hover {
+  cursor: pointer;
+}
+
+div.new_vehicle {
+  margin-top: 1em;
+}
+
+div#dialog {
+  display: none;
 }

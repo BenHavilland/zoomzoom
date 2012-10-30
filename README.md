@@ -15,6 +15,13 @@ Open index.html in your browser.
 
 ## Status
 
+10-29-2012
+* Updated jquery-ui
+* Added mustache.js
+* Moved static templates to mustache templates
+* Added vehicle delete
+* Added vehicle delete confirmation dialog
+
 10-28-2012
 * Created models
 * Added local storage
