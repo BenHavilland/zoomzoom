@@ -3,6 +3,15 @@ $ ->
 
   # Templates
   templates = {}
+  templates.base = '
+  <div class="header">
+      <h1>ZoomZoom</h1>
+      <div class="subtitle">Maintenance logger for your vehicles</div>
+  </div>
+  '
+  templates.center = '
+  <h2 class="vehicle_name">Just a title</h2>
+  '
   templates.vehicle = '
   <span class="vehicle_name">{{name}}</span><span class="del">x</span>
   '
@@ -105,8 +114,7 @@ $ ->
 
     showDetails: ->
       vehicleDetailView = new VehicleDetailView model:@model
-      # appending to body is a placeholder.  adding template soon
-      $('body').append vehicleDetailView.render().el
+      $('div.center_container').html vehicleDetailView.render().el
 
   VehiclesView = Backbone.View.extend
     tagName: "div"
@@ -161,15 +169,29 @@ $ ->
         @createVehicle()
       @
 
+  CenterContainerView = Backbone.View.extend
+    tagName: "div"
+    className: "center_container"
+    template: templates.center
+
+    render: ->
+      $(@el).html Mustache.render @template
+      @
+      
+
   # App Loader View
   MainView = Backbone.View.extend
     el: $("body")
+    template: templates.base
 
     initialize: ->
-      toolBarView = new ToolBarView
-      $(@el).append toolBarView.render().el
+      @toolBarView = new ToolBarView
+      @centerContainerView = new CenterContainerView
 
     render: ->
+      $(@el).html Mustache.render @template
+      $(@el).append @toolBarView.render().el
+      $(@el).append @centerContainerView.render().el
       @
 
   # Create the app

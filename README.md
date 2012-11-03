@@ -15,11 +15,14 @@ Open index.html in your browser.
 
 ## Status
 11-03-2012
-* Implemented App Loader view.
-* Minor code refactor.
-* Split up toolbar and vehicles display templates.
-* Paved the road for for vehicle maintenance views.
-* Added basic vehicle display template.
+* Implemented App Loader view
+* Minor code refactor
+* Split up toolbar and vehicles display templates
+* Paved the road for for vehicle maintenance views
+* Added basic vehicle display template
+* Templated out the base view
+* Added container for center data view
+* css tweaks
 
 10-29-2012
 * Updated jquery-ui

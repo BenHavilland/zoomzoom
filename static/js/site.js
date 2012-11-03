@@ -3,8 +3,17 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   $(function() {
-    var MainView, ToolBarView, Vehicle, VehicleDetailView, VehicleList, VehicleView, Vehicles, VehiclesView, mainView, templates;
+    var CenterContainerView, MainView, ToolBarView, Vehicle, VehicleDetailView, VehicleList, VehicleView, Vehicles, VehiclesView, mainView, templates;
     templates = {};
+    templates.base = '\
+  <div class="header">\
+      <h1>ZoomZoom</h1>\
+      <div class="subtitle">Maintenance logger for your vehicles</div>\
+  </div>\
+  ';
+    templates.center = '\
+  <h2 class="vehicle_name">Just a title</h2>\
+  ';
     templates.vehicle = '\
   <span class="vehicle_name">{{name}}</span><span class="del">x</span>\
   ';
@@ -125,7 +134,7 @@
         vehicleDetailView = new VehicleDetailView({
           model: this.model
         });
-        return $('body').append(vehicleDetailView.render().el);
+        return $('div.center_container').html(vehicleDetailView.render().el);
       }
     });
     VehiclesView = Backbone.View.extend({
@@ -177,14 +186,26 @@
         return this;
       }
     });
+    CenterContainerView = Backbone.View.extend({
+      tagName: "div",
+      className: "center_container",
+      template: templates.center,
+      render: function() {
+        $(this.el).html(Mustache.render(this.template));
+        return this;
+      }
+    });
     MainView = Backbone.View.extend({
       el: $("body"),
+      template: templates.base,
       initialize: function() {
-        var toolBarView;
-        toolBarView = new ToolBarView;
-        return $(this.el).append(toolBarView.render().el);
+        this.toolBarView = new ToolBarView;
+        return this.centerContainerView = new CenterContainerView;
       },
       render: function() {
+        $(this.el).html(Mustache.render(this.template));
+        $(this.el).append(this.toolBarView.render().el);
+        $(this.el).append(this.centerContainerView.render().el);
         return this;
       }
     });

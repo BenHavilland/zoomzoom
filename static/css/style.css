@@ -13,6 +13,10 @@ h1 {
   margin-bottom: 0;
 }
 
+h2.vehicle_name {
+  margin-top: 0;
+}
+
 h3.vehicles {
   display: inline;
 }
@@ -63,6 +67,11 @@ button.add_vehicle {
 
 span.vehicle_name {
   float: left;
+  width: 90%;
+}
+
+span.vehicle_name:hover {
+  cursor: pointer;
 }
 
 span.del {
@@ -80,4 +89,9 @@ div.new_vehicle {
 
 div#dialog {
   display: none;
+}
+
+.center_container {
+  float: left;
+  margin: 0 0 0 1em;
 }
