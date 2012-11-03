@@ -3,14 +3,15 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   $(function() {
-    var ToolBar, ToolBarView, Vehicle, VehicleList, VehicleView, Vehicles, VehiclesView, templates;
+    var MainView, ToolBarView, Vehicle, VehicleDetailView, VehicleList, VehicleView, Vehicles, VehiclesView, mainView, templates;
     templates = {};
     templates.vehicle = '\
   <span class="vehicle_name">{{name}}</span><span class="del">x</span>\
   ';
-    templates.toolbar = '<h3 class="vehicles">Vehicles</h3>\
+    templates.vehicles = '\
+  <h3 class="vehicles">Vehicles</h3>\
   <span class="count"></span>\
-  <ul class="vehicles"></ul>\
+  <ul class="each_vehicle"></ul>\
   <input type="text" class="name" placeholder="Type new vehicle name"></input>\
   <br />\
   <button class="add_vehicle">Add Vehicle</button>\
@@ -21,6 +22,8 @@
     </p>\
   </div>\
   ';
+    templates.toolbar = '';
+    templates.vehicle_detail = '<h2 class="vehicle_name">{{name}}</h2>';
     Vehicle = (function(_super) {
 
       __extends(Vehicle, _super);
@@ -62,32 +65,21 @@
       tagName: "div",
       className: "toolbar",
       template: templates.toolbar,
-      events: {
-        'click .add_vehicle': 'createVehicle',
-        'keypress input.name': 'keyListner'
-      },
-      initialize: function() {
-        var vehiclesView;
-        $('body').append(this.render().el);
-        vehiclesView = new VehiclesView;
-        $(this.el).append(vehiclesView.render().el);
-        this.input_vehicle_name = this.$('input.name');
-        return this;
-      },
       render: function() {
+        var vehiclesView;
         $(this.el).html(Mustache.render(this.template));
+        vehiclesView = new VehiclesView;
+        $(this.el).append(vehiclesView.el);
         return this;
-      },
-      createVehicle: function() {
-        if (!this.input_vehicle_name.val()) return;
-        Vehicles.create({
-          name: this.input_vehicle_name.val()
-        });
-        this.input_vehicle_name.val('');
+      }
+    });
+    VehicleDetailView = Backbone.View.extend({
+      tagName: "div",
+      className: "vehicle_detail",
+      template: templates.vehicle_detail,
+      render: function() {
+        $(this.el).html(Mustache.render(this.template, this.model.attributes));
         return this;
-      },
-      keyListner: function(key) {
-        if (key.keyCode === 13) return this.createVehicle();
       }
     });
     VehicleView = Backbone.View.extend({
@@ -95,7 +87,8 @@
       className: "vehicle",
       template: templates.vehicle,
       events: {
-        'click span.del': 'delVehicle'
+        'click span.del': 'delVehicle',
+        'click span.vehicle_name': 'showDetails'
       },
       initialize: function() {
         return Vehicles.bind('remove', this.removeEl);
@@ -126,35 +119,77 @@
           }
         });
         return this;
+      },
+      showDetails: function() {
+        var vehicleDetailView;
+        vehicleDetailView = new VehicleDetailView({
+          model: this.model
+        });
+        return $('body').append(vehicleDetailView.render().el);
       }
     });
     VehiclesView = Backbone.View.extend({
-      el: $("div.toolbar"),
+      tagName: "div",
+      className: "vehicles",
+      template: templates.vehicles,
+      events: {
+        'click .add_vehicle': 'createVehicle',
+        'keypress input.name': 'keyListner'
+      },
       initialize: function() {
         Vehicles.bind('add', this.addOne, this);
-        Vehicles.bind('all', this.render, this);
+        Vehicles.bind('all', this.updateCount, this);
         Vehicles.bind('reset', this.addAll, this);
         Vehicles.bind('remove', this.removeEl, this);
         return Vehicles.fetch();
       },
       render: function() {
-        $("span.count").html("(" + Vehicles.length + ")");
+        $(this.el).html(Mustache.render(this.template));
         return this;
+      },
+      updateCount: function() {
+        return this.$("span.count").html("(" + Vehicles.length + ")");
       },
       addOne: function(vehicle) {
         var vehicleView;
         vehicleView = new VehicleView({
           model: vehicle
         });
-        $("ul.vehicles").append(vehicleView.render().el);
+        this.$("ul.each_vehicle").append(vehicleView.render().el);
         return this;
       },
       addAll: function() {
-        Vehicles.each(this.addOne);
+        this.render();
+        Vehicles.each(this.addOne, this);
+        return this;
+      },
+      createVehicle: function() {
+        this.input_vehicle_name = this.$('input.name');
+        if (!this.input_vehicle_name.val()) return;
+        Vehicles.create({
+          name: this.input_vehicle_name.val()
+        });
+        this.input_vehicle_name.val('');
+        return this;
+      },
+      keyListner: function(key) {
+        if (key.keyCode === 13) this.createVehicle();
         return this;
       }
     });
-    return ToolBar = new ToolBarView;
+    MainView = Backbone.View.extend({
+      el: $("body"),
+      initialize: function() {
+        var toolBarView;
+        toolBarView = new ToolBarView;
+        return $(this.el).append(toolBarView.render().el);
+      },
+      render: function() {
+        return this;
+      }
+    });
+    mainView = new MainView;
+    return mainView.render();
   });
 
 }).call(this);

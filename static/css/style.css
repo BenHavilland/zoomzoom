@@ -6,7 +6,7 @@ html {
 body {
   margin: 1em;
   padding-bottom: 1em;
-  height: 99%;
+  height: 90%;
 }
 
 h1 {
@@ -46,7 +46,7 @@ li.vehicle {
   display: block;
 }
 
-ul.vehicles {
+ul.each_vehicle {
   width: 100%;
   margin: 0 0 1em 0;
   padding: 0;

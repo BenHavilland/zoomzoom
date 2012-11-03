@@ -6,9 +6,10 @@ $ ->
   templates.vehicle = '
   <span class="vehicle_name">{{name}}</span><span class="del">x</span>
   '
-  templates.toolbar = '<h3 class="vehicles">Vehicles</h3>
+  templates.vehicles = '
+  <h3 class="vehicles">Vehicles</h3>
   <span class="count"></span>
-  <ul class="vehicles"></ul>
+  <ul class="each_vehicle"></ul>
   <input type="text" class="name" placeholder="Type new vehicle name"></input>
   <br />
   <button class="add_vehicle">Add Vehicle</button>
@@ -19,6 +20,8 @@ $ ->
     </p>
   </div>
   '
+  templates.toolbar = ''
+  templates.vehicle_detail = '<h2 class="vehicle_name">{{name}}</h2>'
 
   # Models
   # coming soon...
@@ -50,34 +53,20 @@ $ ->
     className: "toolbar"
     template: templates.toolbar
 
-    events:
-      'click .add_vehicle': 'createVehicle'
-      'keypress input.name'  : 'keyListner'
-
-    initialize: ->
-      $('body').append @render().el
-      vehiclesView = new VehiclesView
-      $(@el).append vehiclesView.render().el
-      @input_vehicle_name = @$('input.name')
-      @
-
     render: ->
       $(@el).html Mustache.render @template
+      vehiclesView = new VehiclesView
+      $(@el).append vehiclesView.el
       @
 
-    createVehicle: ->
-      # if there is text in the vehicle name field create it
-      if !@input_vehicle_name.val()
-        return
-      Vehicles.create({name: @input_vehicle_name.val()})
-      # clear the text to prepare for next input
-      @input_vehicle_name.val('')
-      @
+  VehicleDetailView = Backbone.View.extend
+    tagName: "div"
+    className: "vehicle_detail"
+    template: templates.vehicle_detail
 
-    keyListner: (key) ->
-      # let the user press -return- key unstead of clicking Add
-      if key.keyCode is 13
-        @createVehicle()
+    render: ->
+      $(@el).html Mustache.render @template, @model.attributes
+      @
 
   VehicleView = Backbone.View.extend
     tagName: "li"
@@ -86,6 +75,7 @@ $ ->
 
     events:
       'click span.del':'delVehicle'
+      'click span.vehicle_name': 'showDetails'
 
     initialize: ->
       Vehicles.bind 'remove', @removeEl
@@ -113,37 +103,75 @@ $ ->
                 $(@).dialog( "close" )
       @
 
+    showDetails: ->
+      vehicleDetailView = new VehicleDetailView model:@model
+      # appending to body is a placeholder.  adding template soon
+      $('body').append vehicleDetailView.render().el
+
   VehiclesView = Backbone.View.extend
-    el: $("div.toolbar")
+    tagName: "div"
+    className: "vehicles"
+    template: templates.vehicles
+
+    events:
+      'click .add_vehicle': 'createVehicle'
+      'keypress input.name'  : 'keyListner'
 
     initialize: ->
       # make things happen when the collection updates
       Vehicles.bind 'add', @addOne, @
-      Vehicles.bind 'all', @render, @
+      Vehicles.bind 'all', @updateCount, @
       Vehicles.bind 'reset', @addAll, @
       Vehicles.bind 'remove', @removeEl, @
       # load in the vehicles
       Vehicles.fetch()
 
     render: ->
-      # update the vehicle count
-      $("span.count").html("("+Vehicles.length+")")
+      $(@el).html Mustache.render @template
       @
+
+    updateCount: ->
+      @$("span.count").html("("+Vehicles.length+")")
 
     addOne: (vehicle) ->
       # create and display the passed vehicle
       vehicleView = new VehicleView model:vehicle
-      $("ul.vehicles").append vehicleView.render().el
+      @$("ul.each_vehicle").append vehicleView.render().el
       @
 
     addAll: ->
       # cycle through each vehicle and call addOne
-      Vehicles.each(@addOne)
+      @render()
+      Vehicles.each(@addOne,@)
+      @
+
+    createVehicle: ->
+      @input_vehicle_name = @$('input.name')
+      # if there is text in the vehicle name field create it
+      if !@input_vehicle_name.val()
+        return
+      Vehicles.create({name: @input_vehicle_name.val()})
+      # clear the text to prepare for next input
+      @input_vehicle_name.val('')
+      @
+
+    keyListner: (key) ->
+      # let the user press -return- key unstead of clicking Add
+      if key.keyCode is 13
+        @createVehicle()
       @
 
   # App Loader View
-  # coming soon...
+  MainView = Backbone.View.extend
+    el: $("body")
+
+    initialize: ->
+      toolBarView = new ToolBarView
+      $(@el).append toolBarView.render().el
+
+    render: ->
+      @
 
   # Create the app
-  ToolBar = new ToolBarView
-
+  mainView = new MainView
+  mainView.render()
