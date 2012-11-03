@@ -46,3 +46,5 @@ Open index.html in your browser.
 ## To-do
 * Add models for maintenance tasks
 * Add views for maintenance tasks per vehicle
+* Add maintenance form template
+* Add maintenance log template
