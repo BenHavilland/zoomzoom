@@ -1,7 +1,7 @@
 zoomzoom
 ========
 
-An auto/moto maintenance tracker written in coffeescript w/ backbone.js framework.  Demonstrates usage of the framework and language.
+An auto/moto maintenance tracker written in coffeescript w/ backbone.js framework.
 
 ## Installing
     git clone git@github.com:clickyspinny/zoomzoom.git
