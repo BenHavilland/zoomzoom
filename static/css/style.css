@@ -28,10 +28,8 @@ h3 {
 
 .panel {
   float: left;
-  min-width: 300px;
-  width: 25%;
   padding-right: 1em;
-  margin-right: 1em;
+  max-width: 400px;
 }
 
 li.menu {
@@ -39,7 +37,7 @@ li.menu {
   padding: .15em 0 .15em 0;
   margin: .15em 0 .15em 0;
   list-style-type: none;
-  width: 100%;
+  width: 400px;
   float:left;
   display: block;
 }
@@ -63,10 +61,6 @@ ul.log {
 input.name {
   width: 90%;
   margin-top: 2em;
-}
-
-button.add_vehicle {
-  margin-bottom: 2em;
 }
 
 span.menu {
@@ -114,4 +108,5 @@ span.show_hide:hover {
 div.view_container {
   display: inline-block;
   width: 100%;
+  margin-bottom: 2em;
 }

@@ -7,6 +7,12 @@ $ ->
   <div class="header">
       <h1>ZoomZoom</h1>
       <div class="subtitle">Maintenance logger for your vehicles</div>
+      <div id="dialog" title="Confirm">
+        <p>
+          <span class="ui-icon ui-icon-alert" style="float: left; margin: .2em .2em 0 0;"></span>
+          This vehicle and all associated maintenance items will be permanently deleted and cannot be recovered. Are you sure?
+        </p>
+      </div>
   </div>
   '
   templates.center = '
@@ -25,12 +31,6 @@ $ ->
     <input type="text" class="name" placeholder="Type new vehicle name" />
     <br />
     <button class="add_vehicle">Add Vehicle</button>
-    <div id="dialog" title="Confirm">
-      <p>
-        <span class="ui-icon ui-icon-alert" style="float: left; margin: .2em .2em 0 0;"></span>
-        This vehicle and all associated maintenance items will be permanently deleted and cannot be recovered. Are you sure?
-      </p>
-    </div>
   </div>
   '
   templates.toolbar = ''
