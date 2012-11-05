@@ -22,7 +22,7 @@ Open index.html in your browser.
 
 11-03-2012
 * Implemented App Loader view
-* Minor code refactor
+* Reviewed and refactored
 * Split up toolbar and vehicles display templates
 * Paved the road for for vehicle maintenance views
 * Added basic vehicle display template
