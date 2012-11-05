@@ -21,28 +21,35 @@
     templates.vehicles = '\
   <h3 class="vehicles">Vehicles</h3>\
   <span class="count"></span>\
-  <ul class="each_vehicle"></ul>\
-  <input type="text" class="name" placeholder="Type new vehicle name" />\
-  <br />\
-  <button class="add_vehicle">Add Vehicle</button>\
-  <div id="dialog" title="Confirm">\
-    <p>\
-      <span class="ui-icon ui-icon-alert" style="float: left; margin: .2em .2em 0 0;"></span>\
-      This vehicle and all associated maintenance items will be permanently deleted and cannot be recovered. Are you sure?\
-    </p>\
+  <span class="show_hide">...</span>\
+  <div class="view_container">\
+    <ul class="each_vehicle"></ul>\
+    <input type="text" class="name" placeholder="Type new vehicle name" />\
+    <br />\
+    <button class="add_vehicle">Add Vehicle</button>\
+    <div id="dialog" title="Confirm">\
+      <p>\
+        <span class="ui-icon ui-icon-alert" style="float: left; margin: .2em .2em 0 0;"></span>\
+        This vehicle and all associated maintenance items will be permanently deleted and cannot be recovered. Are you sure?\
+      </p>\
+    </div>\
   </div>\
   ';
     templates.toolbar = '';
     templates.vehicle_log = '\
   <h3 class="vehicle_name">{{name}}</h3>\
-  <ul class="log"></ul>\
+  <span class="show_hide">...</span>\
+  <div class="view_container">\
+    <ul class="log"></ul>\
+  </div>\
   ';
     templates.vehicle_log_item = '\
   <span class="menu">{{name}}</span><span class="del">x</span>\
   ';
     templates.vehicle_add_log = '\
   <h3 class="add_log_title">Add Log Entry</h3>\
-  <div class="add_log">\
+  <span class="show_hide">...</span>\
+  <div class="view_container">\
     <input type="text" id="miles" class="log miles" placeholder="Mileage at time of work" />\
     <input type="text" id="title" class="log title" placeholder="Title" />\
     <input type="text" id="description" class="log desc" placeholder="Description" />\
@@ -127,7 +134,7 @@
     LogItems.fetch();
     ToolBarView = Backbone.View.extend({
       tagName: "div",
-      className: "toolbar",
+      className: "toolbar panel",
       template: templates.toolbar,
       render: function() {
         var vehiclesView;
@@ -147,6 +154,9 @@
         });
         return this.render();
       },
+      events: {
+        'click span.show_hide': 'toggleVisible'
+      },
       render: function() {
         $(this.el).html(Mustache.render(this.template, this.model.attributes));
         return this;
@@ -163,6 +173,10 @@
         _.each(LogItems.where({
           "vehicleId": this.model.id
         }), this.addOne, this);
+        return this;
+      },
+      toggleVisible: function() {
+        this.$('.view_container', this.el).toggle();
         return this;
       }
     });
@@ -181,7 +195,8 @@
       template: templates.vehicle_add_log,
       events: {
         'click button.add_log': 'createLogItem',
-        'keypress input': 'keyListener'
+        'keypress input': 'keyListener',
+        'click span.show_hide': 'toggleVisible'
       },
       render: function() {
         $(this.el).html(Mustache.render(this.template, this.model.attributes));
@@ -199,6 +214,10 @@
       },
       keyListener: function(key) {
         if (key.keyCode === 13) this.createLogItem();
+        return this;
+      },
+      toggleVisible: function() {
+        this.$('.view_container', this.el).toggle();
         return this;
       }
     });
@@ -258,7 +277,8 @@
       template: templates.vehicles,
       events: {
         'click .add_vehicle': 'createVehicle',
-        'keypress input.name': 'keyListener'
+        'keypress input.name': 'keyListener',
+        'click span.show_hide': 'toggleVisible'
       },
       initialize: function() {
         Vehicles.bind('add', this.addOne, this);
@@ -299,11 +319,15 @@
       keyListener: function(key) {
         if (key.keyCode === 13) this.createVehicle();
         return this;
+      },
+      toggleVisible: function() {
+        this.$('.view_container', this.el).toggle();
+        return this;
       }
     });
     CenterContainerView = Backbone.View.extend({
       tagName: "div",
-      className: "center_container",
+      className: "center_container panel",
       template: templates.center,
       render: function() {
         $(this.el).html(Mustache.render(this.template));
@@ -312,7 +336,7 @@
     });
     RightContainerView = Backbone.View.extend({
       tagName: "div",
-      className: "right_container",
+      className: "right_container panel",
       template: templates.right,
       render: function() {
         $(this.el).html(Mustache.render(this.template));

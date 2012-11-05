@@ -15,9 +15,6 @@ h1 {
 
 h3 {
   margin: 0;
-}
-
-h3.vehicles {
   display: inline;
 }
 
@@ -29,13 +26,12 @@ h3.vehicles {
   border-bottom: solid gray;
 }
 
-.toolbar {
+.panel {
   float: left;
-  min-width: 250px;
-  width: 15%;
+  min-width: 300px;
+  width: 25%;
   padding-right: 1em;
   margin-right: 1em;
-  border-right: solid gray;
 }
 
 li.menu {
@@ -45,6 +41,7 @@ li.menu {
   list-style-type: none;
   width: 100%;
   float:left;
+  display: block;
 }
 
 li.menu:hover .del {
@@ -98,37 +95,23 @@ div#dialog {
   display: none;
 }
 
-.center_container {
-  float: left;
-  margin: 0 1em 0 0;
-  padding-right: 1em;
-  margin-right: 1em;
-  border-right: solid gray;
-  max-width: 50%;
-  min-width: 250px;
-}
-
-.right_container {
-  float: left;
-  margin: 0 1em 0 0;
-  padding-right: 1em;
-  margin-right: 1em;
-  border-right: solid gray;
-  max-width: 30%;
-  min-width: 250px;
-}
-
 input.log {
   width: 90%  ;
 }
 
-div.vehicle_log {
-  width: 80%;
+span.show_hide {
+  background-color: #E0E0E0;
+  display:inline-block;
+  line-height:3px;
+  padding: 0 3px 7px 3px;
 }
 
-div.vehicle_add_log {
-  width: 80%;
+span.show_hide:hover {
+  background-color: #C0C0C0;
+  cursor: pointer;
 }
 
-div.add_log {
+div.view_container {
+  display: inline-block;
+  width: 100%;
 }

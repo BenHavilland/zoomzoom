@@ -15,10 +15,11 @@ Open index.html in your browser.
 
 ## Status
 11-04-2012
-* Added log model and collection.
-* Added log input form and views.
-* Added log display views.
-* Broke out some views.
+* Added log model and collection
+* Added log input form and views
+* Added log display views
+* Broke out some views
+* Added view toggles in ui
 
 11-03-2012
 * Implemented App Loader view
