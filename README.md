@@ -14,6 +14,12 @@ An auto/moto maintenance tracker written in coffeescript w/ backbone.js framewor
 Open index.html in your browser.
 
 ## Status
+11-04-2012
+* Added log model and collection.
+* Added log input form and views.
+* Added log display views.
+* Broke out some views.
+
 11-03-2012
 * Implemented App Loader view
 * Minor code refactor
@@ -44,5 +50,7 @@ Open index.html in your browser.
 * Basic app display works
 
 ## To-do
-* Add models for maintenance tasks
-* Add views for maintenance tasks per vehicle
+* Tweak views for logs
+* Streamline CSS
+* Include mobile builds from PhoneGap
+

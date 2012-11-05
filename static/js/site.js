@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   $(function() {
-    var CenterContainerView, MainView, ToolBarView, Vehicle, VehicleDetailView, VehicleList, VehicleView, Vehicles, VehiclesView, mainView, templates;
+    var CenterContainerView, LogItem, LogItemView, LogItems, LogView, MainView, RightContainerView, ToolBarView, Vehicle, VehicleAddLogView, VehicleList, VehicleView, Vehicles, VehiclesView, mainView, templates;
     templates = {};
     templates.base = '\
   <div class="header">\
@@ -12,16 +12,17 @@
   </div>\
   ';
     templates.center = '\
-  <h2 class="vehicle_name">Just a title</h2>\
+  ';
+    templates.right = '\
   ';
     templates.vehicle = '\
-  <span class="vehicle_name">{{name}}</span><span class="del">x</span>\
+  <span class="menu">{{name}}</span><span class="del">x</span>\
   ';
     templates.vehicles = '\
   <h3 class="vehicles">Vehicles</h3>\
   <span class="count"></span>\
   <ul class="each_vehicle"></ul>\
-  <input type="text" class="name" placeholder="Type new vehicle name"></input>\
+  <input type="text" class="name" placeholder="Type new vehicle name" />\
   <br />\
   <button class="add_vehicle">Add Vehicle</button>\
   <div id="dialog" title="Confirm">\
@@ -32,7 +33,23 @@
   </div>\
   ';
     templates.toolbar = '';
-    templates.vehicle_detail = '<h2 class="vehicle_name">{{name}}</h2>';
+    templates.vehicle_log = '\
+  <h3 class="vehicle_name">{{name}}</h3>\
+  <ul class="log"></ul>\
+  ';
+    templates.vehicle_log_item = '\
+  <span class="menu">{{name}}</span><span class="del">x</span>\
+  ';
+    templates.vehicle_add_log = '\
+  <h3 class="add_log_title">Add Log Entry</h3>\
+  <div class="add_log">\
+    <input type="text" id="miles" class="log miles" placeholder="Mileage at time of work" />\
+    <input type="text" id="title" class="log title" placeholder="Title" />\
+    <input type="text" id="description" class="log desc" placeholder="Description" />\
+    <input type="text" id="cost" class="log cost" placeholder="Cost" />\
+    <button class="add_log">Add Log Entry</button>\
+  </div>\
+  ';
     Vehicle = (function(_super) {
 
       __extends(Vehicle, _super);
@@ -54,6 +71,27 @@
       return Vehicle;
 
     })(Backbone.Model);
+    LogItem = (function(_super) {
+
+      __extends(LogItem, _super);
+
+      function LogItem() {
+        LogItem.__super__.constructor.apply(this, arguments);
+      }
+
+      LogItem.prototype.defaults = function() {
+        return {
+          added: new Date()
+        };
+      };
+
+      LogItem.prototype.initialize = function() {
+        return console.log("log item initialized");
+      };
+
+      return LogItem;
+
+    })(Backbone.Model);
     VehicleList = (function(_super) {
 
       __extends(VehicleList, _super);
@@ -69,7 +107,24 @@
       return VehicleList;
 
     })(Backbone.Collection);
+    LogItems = (function(_super) {
+
+      __extends(LogItems, _super);
+
+      function LogItems() {
+        LogItems.__super__.constructor.apply(this, arguments);
+      }
+
+      LogItems.prototype.model = LogItem;
+
+      LogItems.prototype.localStorage = new Store("vehicle-logs-backbone");
+
+      return LogItems;
+
+    })(Backbone.Collection);
     Vehicles = new VehicleList;
+    LogItems = new LogItems;
+    LogItems.fetch();
     ToolBarView = Backbone.View.extend({
       tagName: "div",
       className: "toolbar",
@@ -82,22 +137,78 @@
         return this;
       }
     });
-    VehicleDetailView = Backbone.View.extend({
+    LogView = Backbone.View.extend({
       tagName: "div",
-      className: "vehicle_detail",
-      template: templates.vehicle_detail,
+      className: "vehicle_log",
+      template: templates.vehicle_log,
+      initialize: function() {
+        LogItems.where({
+          "vehicleId": this.model.id
+        });
+        return this.render();
+      },
+      render: function() {
+        $(this.el).html(Mustache.render(this.template, this.model.attributes));
+        return this;
+      },
+      addOne: function(logItem) {
+        var logItemView;
+        logItemView = new LogItemView({
+          model: logItem
+        });
+        this.$("ul.log").append(logItemView.render().el);
+        return this;
+      },
+      addAll: function() {
+        _.each(LogItems.where({
+          "vehicleId": this.model.id
+        }), this.addOne, this);
+        return this;
+      }
+    });
+    LogItemView = Backbone.View.extend({
+      tagName: "li",
+      className: "menu",
+      template: templates.vehicle_log_item,
       render: function() {
         $(this.el).html(Mustache.render(this.template, this.model.attributes));
         return this;
       }
     });
+    VehicleAddLogView = Backbone.View.extend({
+      tagName: "div",
+      className: "vehicle_add_log",
+      template: templates.vehicle_add_log,
+      events: {
+        'click button.add_log': 'createLogItem',
+        'keypress input': 'keyListener'
+      },
+      render: function() {
+        $(this.el).html(Mustache.render(this.template, this.model.attributes));
+        return this;
+      },
+      createLogItem: function() {
+        this.input_log_title = this.$('input.title');
+        if (!this.input_log_title.val()) return;
+        LogItems.create({
+          name: this.input_log_title.val(),
+          vehicleId: this.model.id
+        });
+        this.$('input').val('');
+        return this;
+      },
+      keyListener: function(key) {
+        if (key.keyCode === 13) this.createLogItem();
+        return this;
+      }
+    });
     VehicleView = Backbone.View.extend({
       tagName: "li",
-      className: "vehicle",
+      className: "menu",
       template: templates.vehicle,
       events: {
         'click span.del': 'delVehicle',
-        'click span.vehicle_name': 'showDetails'
+        'click span.menu': 'showDetails'
       },
       initialize: function() {
         return Vehicles.bind('remove', this.removeEl);
@@ -130,11 +241,15 @@
         return this;
       },
       showDetails: function() {
-        var vehicleDetailView;
-        vehicleDetailView = new VehicleDetailView({
+        var vehicleAddLogView, vehicleLogView;
+        vehicleLogView = new LogView({
           model: this.model
         });
-        return $('div.center_container').html(vehicleDetailView.render().el);
+        $('div.center_container').html(vehicleLogView.addAll().el);
+        vehicleAddLogView = new VehicleAddLogView({
+          model: this.model
+        });
+        return $('div.right_container').html(vehicleAddLogView.render().el);
       }
     });
     VehiclesView = Backbone.View.extend({
@@ -143,7 +258,7 @@
       template: templates.vehicles,
       events: {
         'click .add_vehicle': 'createVehicle',
-        'keypress input.name': 'keyListner'
+        'keypress input.name': 'keyListener'
       },
       initialize: function() {
         Vehicles.bind('add', this.addOne, this);
@@ -181,7 +296,7 @@
         this.input_vehicle_name.val('');
         return this;
       },
-      keyListner: function(key) {
+      keyListener: function(key) {
         if (key.keyCode === 13) this.createVehicle();
         return this;
       }
@@ -195,17 +310,28 @@
         return this;
       }
     });
+    RightContainerView = Backbone.View.extend({
+      tagName: "div",
+      className: "right_container",
+      template: templates.right,
+      render: function() {
+        $(this.el).html(Mustache.render(this.template));
+        return this;
+      }
+    });
     MainView = Backbone.View.extend({
       el: $("body"),
       template: templates.base,
       initialize: function() {
         this.toolBarView = new ToolBarView;
-        return this.centerContainerView = new CenterContainerView;
+        this.centerContainerView = new CenterContainerView;
+        return this.rightContainerView = new RightContainerView;
       },
       render: function() {
         $(this.el).html(Mustache.render(this.template));
         $(this.el).append(this.toolBarView.render().el);
         $(this.el).append(this.centerContainerView.render().el);
+        $(this.el).append(this.rightContainerView.render().el);
         return this;
       }
     });

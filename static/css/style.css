@@ -13,8 +13,8 @@ h1 {
   margin-bottom: 0;
 }
 
-h2.vehicle_name {
-  margin-top: 0;
+h3 {
+  margin: 0;
 }
 
 h3.vehicles {
@@ -34,10 +34,11 @@ h3.vehicles {
   min-width: 250px;
   width: 15%;
   padding-right: 1em;
+  margin-right: 1em;
   border-right: solid gray;
 }
 
-li.vehicle {
+li.menu {
   border-bottom: dashed gray 1px;
   padding: .15em 0 .15em 0;
   margin: .15em 0 .15em 0;
@@ -46,11 +47,17 @@ li.vehicle {
   float:left;
 }
 
-.vehicles li:hover .del {
+li.menu:hover .del {
   display: block;
 }
 
 ul.each_vehicle {
+  width: 100%;
+  margin: 0 0 1em 0;
+  padding: 0;
+}
+
+ul.log {
   width: 100%;
   margin: 0 0 1em 0;
   padding: 0;
@@ -65,12 +72,12 @@ button.add_vehicle {
   margin-bottom: 2em;
 }
 
-span.vehicle_name {
+span.menu {
   float: left;
   width: 90%;
 }
 
-span.vehicle_name:hover {
+span.menu:hover {
   cursor: pointer;
 }
 
@@ -93,5 +100,35 @@ div#dialog {
 
 .center_container {
   float: left;
-  margin: 0 0 0 1em;
+  margin: 0 1em 0 0;
+  padding-right: 1em;
+  margin-right: 1em;
+  border-right: solid gray;
+  max-width: 50%;
+  min-width: 250px;
+}
+
+.right_container {
+  float: left;
+  margin: 0 1em 0 0;
+  padding-right: 1em;
+  margin-right: 1em;
+  border-right: solid gray;
+  max-width: 30%;
+  min-width: 250px;
+}
+
+input.log {
+  width: 90%  ;
+}
+
+div.vehicle_log {
+  width: 80%;
+}
+
+div.vehicle_add_log {
+  width: 80%;
+}
+
+div.add_log {
 }
