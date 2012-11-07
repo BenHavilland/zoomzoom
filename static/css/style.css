@@ -10,7 +10,7 @@ body {
 }
 
 h1 {
-  margin-bottom: 0;
+  margin: 0;
 }
 
 h3 {
@@ -87,11 +87,15 @@ div#dialog {
   display: none;
 }
 
-span.show_hide {
+.show_hide {
   background-color: #E0E0E0;
-  display:inline-block;
+  display: none;
   line-height:3px;
   padding: 0 3px 7px 3px;
+}
+
+.show_hide_show {
+  display: inline-block;
 }
 
 span.show_hide:hover {
@@ -102,4 +106,17 @@ span.show_hide:hover {
 div.view_container {
   display: inline-block;
   width: 100%;
+  margin-bottom: 1em;
+}
+
+.title {
+  display: block;
+}
+
+.title :hover {
+  cursor: pointer;
+}
+
+.add_margin {
+  margin-bottom: 1em;
 }

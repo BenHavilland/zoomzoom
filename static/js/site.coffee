@@ -23,21 +23,23 @@ $ ->
   <span class="menu">{{name}}</span><span class="del">x</span>
   '
   templates.vehicles = '
-  <h3 class="vehicles">Vehicles</h3>
-  <span class="count"></span>
-  <span class="show_hide">...</span>
+  <div class="title">
+    <h3 class="vehicles">Vehicles</h3>
+    <span class="count"></span>
+    <span class="show_hide">...</span>
+  </div>
   <div class="view_container">
     <ul class="each_vehicle"></ul>
-
+    <input type="text" class="name" placeholder="Type new vehicle name" />
+    <button class="add_vehicle">Add Vehicle</button>
   </div>
-  <input type="text" class="name" placeholder="Type new vehicle name" />
-  <br />
-  <button class="add_vehicle">Add Vehicle</button>
   '
   templates.toolbar = ''
   templates.vehicle_log = '
-  <h3 class="vehicle_name">{{name}}</h3>
-  <span class="show_hide">...</span>
+  <div class="title">
+    <h3 class="vehicle_name">{{name}}</h3>
+    <span class="show_hide">...</span>
+  </div>
   <div class="view_container">
     <ul class="log"></ul>
   </div>
@@ -46,8 +48,10 @@ $ ->
   <span class="menu">{{name}}</span><span class="del">x</span>
   '
   templates.vehicle_add_log = '
-  <h3 class="add_log_title">Add Log Entry</h3>
-  <span class="show_hide">...</span>
+  <div class="title">
+    <h3 class="add_log_title">Add Log Entry</h3>
+    <span class="show_hide">...</span>
+  </div>
   <div class="view_container">
     <input type="text" id="miles" class="log miles" placeholder="Mileage at time of work" />
     <input type="text" id="title" class="log title" placeholder="Title" />
@@ -122,7 +126,7 @@ $ ->
       @render()
     
     events:
-      'click span.show_hide' : 'toggleVisible'
+      'click div.title' : 'toggleVisible'
 
     render: ->
       $(@el).html Mustache.render @template, @model.attributes
@@ -140,6 +144,8 @@ $ ->
 
     toggleVisible: ->
       @$('.view_container', @el).toggle()
+      @$('.show_hide', @el).toggleClass('show_hide_show')
+      @$('div.title', @el).toggleClass('add_margin')
       @
 
   LogItemView = Backbone.View.extend
@@ -159,7 +165,7 @@ $ ->
     events:
       'click button.add_log': 'createLogItem'
       'keypress input'  : 'keyListener'
-      'click span.show_hide' : 'toggleVisible'
+      'click div.title' : 'toggleVisible'
 
     render: ->
       $(@el).html Mustache.render @template, @model.attributes
@@ -184,6 +190,8 @@ $ ->
 
     toggleVisible: ->
       @$('.view_container', @el).toggle()
+      @$('.show_hide', @el).toggleClass('show_hide_show')
+      @$('div.title', @el).toggleClass('add_margin')
       @
 
   VehicleView = Backbone.View.extend
@@ -235,7 +243,7 @@ $ ->
     events:
       'click .add_vehicle' : 'createVehicle'
       'keypress input.name' : 'keyListener'
-      'click span.show_hide' : 'toggleVisible'
+      'click div.title' : 'toggleVisible'
 
     initialize: ->
       # make things happen when the collection updates
@@ -283,6 +291,8 @@ $ ->
 
     toggleVisible: ->
       @$('.view_container', @el).toggle()
+      @$('.show_hide', @el).toggleClass('show_hide_show')
+      @$('div.title', @el).toggleClass('add_margin')
       @
 
   CenterContainerView = Backbone.View.extend
