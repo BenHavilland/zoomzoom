@@ -18,6 +18,12 @@ h3 {
   display: inline;
 }
 
+
+input {
+  display: block;
+  width: 90%;
+}
+
 .header {
   float: left;
   width: 100%;
@@ -29,7 +35,8 @@ h3 {
 .panel {
   float: left;
   padding-right: 1em;
-  max-width: 400px;
+  max-width: 98%;
+  min-width: 275px;
 }
 
 li.menu {
@@ -37,8 +44,8 @@ li.menu {
   padding: .15em 0 .15em 0;
   margin: .15em 0 .15em 0;
   list-style-type: none;
-  width: 400px;
-  float:left;
+  min-width: 275px;
+  height: 1em;
   display: block;
 }
 
@@ -56,11 +63,6 @@ ul.log {
   width: 100%;
   margin: 0 0 1em 0;
   padding: 0;
-}
-
-input.name {
-  width: 90%;
-  margin-top: 2em;
 }
 
 span.menu {
@@ -81,16 +83,8 @@ span.del:hover {
   cursor: pointer;
 }
 
-div.new_vehicle {
-  margin-top: 1em;
-}
-
 div#dialog {
   display: none;
-}
-
-input.log {
-  width: 90%  ;
 }
 
 span.show_hide {
@@ -108,5 +102,4 @@ span.show_hide:hover {
 div.view_container {
   display: inline-block;
   width: 100%;
-  margin-bottom: 2em;
 }

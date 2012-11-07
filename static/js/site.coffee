@@ -28,10 +28,11 @@ $ ->
   <span class="show_hide">...</span>
   <div class="view_container">
     <ul class="each_vehicle"></ul>
-    <input type="text" class="name" placeholder="Type new vehicle name" />
-    <br />
-    <button class="add_vehicle">Add Vehicle</button>
+
   </div>
+  <input type="text" class="name" placeholder="Type new vehicle name" />
+  <br />
+  <button class="add_vehicle">Add Vehicle</button>
   '
   templates.toolbar = ''
   templates.vehicle_log = '
