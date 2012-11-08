@@ -120,3 +120,7 @@ div.view_container {
 .add_margin {
   margin-bottom: 1em;
 }
+
+span.cost {
+  float: right;
+}

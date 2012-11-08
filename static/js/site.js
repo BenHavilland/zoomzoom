@@ -12,7 +12,7 @@
       <div id="dialog" title="Confirm">\
         <p>\
           <span class="ui-icon ui-icon-alert" style="float: left; margin: .2em .2em 0 0;"></span>\
-          This vehicle and all associated maintenance items will be permanently deleted and cannot be recovered. Are you sure?\
+          <span class="alert_content"></span>\
         </p>\
       </div>\
   </div>\
@@ -47,7 +47,11 @@
   </div>\
   ';
     templates.vehicle_log_item = '\
-  <span class="menu">{{name}}</span><span class="del">x</span>\
+  <span class="menu">\
+    <span>{{title}}</span>\
+    <span class="cost">{{cost}}</span>\
+  </span>\
+  <span class="del">x</span>\
   ';
     templates.vehicle_add_log = '\
   <div class="title">\
@@ -157,6 +161,8 @@
         LogItems.where({
           "vehicleId": this.model.id
         });
+        LogItems.bind('add', this.addOne, this);
+        LogItems.bind('reset', this.addAll, this);
         return this.render();
       },
       events: {
@@ -191,8 +197,35 @@
       tagName: "li",
       className: "menu",
       template: templates.vehicle_log_item,
+      events: {
+        'click span.del': 'delLogItem'
+      },
       render: function() {
         $(this.el).html(Mustache.render(this.template, this.model.attributes));
+        return this;
+      },
+      delLogItem: function() {
+        var _this = this;
+        $("span.alert_content").html("This maintenance item will be permanently deleted and cannot be recovered. Are you sure?");
+        $("div#dialog").dialog({
+          resizable: false,
+          modal: true,
+          width: "50%",
+          title: "Confirm Delete",
+          buttons: {
+            "Delete": function() {
+              $("div#dialog").dialog("close");
+              return _this.model.destroy({
+                success: function() {
+                  return $(_this.el).remove();
+                }
+              });
+            },
+            Cancel: function() {
+              return $(this).dialog("close");
+            }
+          }
+        });
         return this;
       }
     });
@@ -210,12 +243,15 @@
         return this;
       },
       createLogItem: function() {
-        this.input_log_title = this.$('input.title');
-        if (!this.input_log_title.val()) return;
-        LogItems.create({
-          name: this.input_log_title.val(),
-          vehicleId: this.model.id
+        var form_vals;
+        if (!this.$('input.title').val()) return;
+        form_vals = {};
+        form_vals.vehicleId = this.model.id;
+        _.each(this.$('input'), function(field) {
+          return form_vals[$(field).attr('id')] = $(field).val();
         });
+        console.log(form_vals);
+        LogItems.create(form_vals);
         this.$('input').val('');
         return this;
       },
@@ -238,15 +274,13 @@
         'click span.del': 'delVehicle',
         'click span.menu': 'showDetails'
       },
-      initialize: function() {
-        return Vehicles.bind('remove', this.removeEl);
-      },
       render: function() {
         $(this.el).html(Mustache.render(this.template, this.model.attributes));
         return this;
       },
       delVehicle: function() {
         var _this = this;
+        $("span.alert_content").html("This vehicle and all associated maintenance items will be permanently deleted and cannot be recovered. Are you sure?");
         $("div#dialog").dialog({
           resizable: false,
           modal: true,
@@ -293,7 +327,6 @@
         Vehicles.bind('add', this.addOne, this);
         Vehicles.bind('all', this.updateCount, this);
         Vehicles.bind('reset', this.addAll, this);
-        Vehicles.bind('remove', this.removeEl, this);
         return Vehicles.fetch();
       },
       render: function() {

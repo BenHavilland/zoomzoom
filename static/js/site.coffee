@@ -10,7 +10,7 @@ $ ->
       <div id="dialog" title="Confirm">
         <p>
           <span class="ui-icon ui-icon-alert" style="float: left; margin: .2em .2em 0 0;"></span>
-          This vehicle and all associated maintenance items will be permanently deleted and cannot be recovered. Are you sure?
+          <span class="alert_content"></span>
         </p>
       </div>
   </div>
@@ -45,7 +45,11 @@ $ ->
   </div>
   '
   templates.vehicle_log_item = '
-  <span class="menu">{{name}}</span><span class="del">x</span>
+  <span class="menu">
+    <span>{{title}}</span>
+    <span class="cost">{{cost}}</span>
+  </span>
+  <span class="del">x</span>
   '
   templates.vehicle_add_log = '
   <div class="title">
@@ -123,6 +127,8 @@ $ ->
 
     initialize: ->
       LogItems.where("vehicleId":@model.id)
+      LogItems.bind 'add', @addOne, @
+      LogItems.bind 'reset', @addAll, @
       @render()
     
     events:
@@ -153,8 +159,31 @@ $ ->
     className: "menu"
     template: templates.vehicle_log_item
 
+    events:
+      'click span.del':'delLogItem'
+
     render: ->
       $(@el).html Mustache.render @template, @model.attributes
+      @
+
+    delLogItem: ->
+      # display the "are you sure" dialog
+      $("span.alert_content").html "This maintenance item will be permanently deleted and cannot be recovered. Are you sure?"
+      $("div#dialog").dialog
+        resizable: false
+        modal: true
+        width: "50%"
+        title: "Confirm Delete"
+        buttons:
+            "Delete": =>
+                # clicked delete, delete the vehicle
+                $("div#dialog").dialog( "close" )
+                @model.destroy success: =>
+                  # remove from the ui on successful delete
+                  $(@el).remove()
+            Cancel: ->
+                # clicked cancel, don't delete it. just close the dialog
+                $(@).dialog( "close" )
       @
 
   VehicleAddLogView = Backbone.View.extend
@@ -172,12 +201,15 @@ $ ->
       @
 
     createLogItem: ->
-      @input_log_title = @$('input.title')
       # if there is text in the log title field we'll create it
-      if !@input_log_title.val()
+      if !@$('input.title').val()
         return
-      # this will be modified to include all fields
-      LogItems.create({name: @input_log_title.val(),vehicleId:@model.id})
+      form_vals = {}
+      form_vals.vehicleId = @model.id
+      _.each @$('input'), (field) ->
+        form_vals[$(field).attr('id')] = $(field).val()
+      console.log form_vals
+      LogItems.create(form_vals)
       # clear the text in all fields to prepare for next input
       @$('input').val('')
       @
@@ -203,15 +235,13 @@ $ ->
       'click span.del':'delVehicle'
       'click span.menu': 'showDetails'
 
-    initialize: ->
-      Vehicles.bind 'remove', @removeEl
-
     render: ->
       $(@el).html Mustache.render @template, @model.attributes
       @
 
     delVehicle: ->
       # display the "are you sure" dialog
+      $("span.alert_content").html "This vehicle and all associated maintenance items will be permanently deleted and cannot be recovered. Are you sure?"
       $("div#dialog").dialog
         resizable: false
         modal: true
@@ -250,7 +280,6 @@ $ ->
       Vehicles.bind 'add', @addOne, @
       Vehicles.bind 'all', @updateCount, @
       Vehicles.bind 'reset', @addAll, @
-      Vehicles.bind 'remove', @removeEl, @
       # load in the vehicles
       Vehicles.fetch()
 
