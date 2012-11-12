@@ -300,6 +300,11 @@
             }
           }
         });
+        navigator.notification.alert('You are the winner!', this.alertDismissed, 'Game Over', 'Done');
+        navigator.notification.vibrate(2000);
+        return this;
+      },
+      alertDismissed: function() {
         return this;
       },
       showDetails: function() {

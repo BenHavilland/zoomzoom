@@ -257,6 +257,18 @@ $ ->
             Cancel: ->
                 # clicked cancel, don't delete it. just close the dialog
                 $(@).dialog( "close" )
+
+      # test for phonegap api
+      navigator.notification.alert(
+        'You are the winner!',  #message
+        @alertDismissed,         #callback
+        'Game Over',            #title
+        'Done'                  #buttonName
+      )
+      navigator.notification.vibrate 2000
+      @
+
+    alertDismissed: ->
       @
 
     showDetails: ->
