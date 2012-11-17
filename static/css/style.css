@@ -80,16 +80,17 @@ div.view_container {
 }
 
 ul.breadcrumbs {
-  padding-left: 0;
-  margin-left: 0;
+  padding: 0;
+  margin: 0;
 }
 
 li.breadcrumb {
   border-top: solid 1px gray;
   border-bottom: solid 1px gray;
   border-right: solid 1px gray;
-  display: inline;
+  display: block;
   padding: .75em;
+  margin: 0;
   background: lightgray;
   left: 0px;
 }
@@ -97,7 +98,10 @@ li.breadcrumb {
 li.breadcrumb:last-child {
   border: none;
   background: none;
-  visibility:hidden;
+  font-size: 1.17em;
+  font-weight: bold;
+  padding-left: 0;
+  margin-left: 0;
 }
 
 li.breadcrumb:hover {

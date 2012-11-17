@@ -21,10 +21,6 @@ $ ->
   templates.breadcrumbs = ''
   templates.vehicle = '<span class="menu">{{name}}</span>'
   templates.vehicles = '
-  <div class="title">
-    <h3 class="vehicles">Vehicles</h3>
-    <span class="count"></span>
-  </div>
   <div class="view_container">
     <ul class="each_vehicle"></ul>
     <input type="text" class="name" placeholder="Type new vehicle name" />
@@ -32,9 +28,6 @@ $ ->
   </div>
   '
   templates.vehicle_log = '
-  <div class="title">
-    <h3 class="vehicle_name">{{name}}</h3>
-  </div>
   <div class="view_container">
     <ul class="log"></ul>
   </div>
@@ -51,7 +44,6 @@ $ ->
   '
   templates.vehicle_log_item_full = '
   <div class="view_container">
-    <h3 class="title">{{title}}</h3>
     <ul>
       <li>
         <span class="label">Miles:</span>
@@ -73,9 +65,6 @@ $ ->
   </div>
   '
   templates.vehicle_add_log = '
-  <div class="title">
-    <h3 class="add_log_title">Add Log Entry</h3>
-  </div>
   <div class="view_container">
     <input type="text" id="miles" class="log miles" placeholder="Mileage at time of work" />
     <input type="text" id="title" class="log title" placeholder="Title" maxlength="40"/>
@@ -249,7 +238,7 @@ $ ->
     renderFull: ->
       fullLogItemView = new FullLogItemView model:@model
       $('div#content').html fullLogItemView.render().el
-      Breadcrumbs.addOne("#"+@model.get "title")
+      Breadcrumbs.addOne(@model.get "title")
 
   VehicleAddLogView = Backbone.View.extend
     tagName: "div"
@@ -366,7 +355,6 @@ $ ->
     initialize: ->
       # make things happen when the collection updates
       Vehicles.bind 'add', @addOne, @
-      Vehicles.bind 'all', @updateCount, @
       Vehicles.bind 'reset', @addAll, @
       # load in the vehicles
       Vehicles.fetch()
@@ -375,9 +363,6 @@ $ ->
       $(@el).html Mustache.render @template
       Breadcrumbs.render().addOne("Vehicles")
       @
-
-    updateCount: ->
-      @$("span.count").html("("+Vehicles.length+")")
 
     addOne: (vehicle) ->
       # create and display the passed vehicle

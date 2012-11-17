@@ -23,10 +23,6 @@
     templates.breadcrumbs = '';
     templates.vehicle = '<span class="menu">{{name}}</span>';
     templates.vehicles = '\
-  <div class="title">\
-    <h3 class="vehicles">Vehicles</h3>\
-    <span class="count"></span>\
-  </div>\
   <div class="view_container">\
     <ul class="each_vehicle"></ul>\
     <input type="text" class="name" placeholder="Type new vehicle name" />\
@@ -34,9 +30,6 @@
   </div>\
   ';
     templates.vehicle_log = '\
-  <div class="title">\
-    <h3 class="vehicle_name">{{name}}</h3>\
-  </div>\
   <div class="view_container">\
     <ul class="log"></ul>\
   </div>\
@@ -53,7 +46,6 @@
   ';
     templates.vehicle_log_item_full = '\
   <div class="view_container">\
-    <h3 class="title">{{title}}</h3>\
     <ul>\
       <li>\
         <span class="label">Miles:</span>\
@@ -75,9 +67,6 @@
   </div>\
   ';
     templates.vehicle_add_log = '\
-  <div class="title">\
-    <h3 class="add_log_title">Add Log Entry</h3>\
-  </div>\
   <div class="view_container">\
     <input type="text" id="miles" class="log miles" placeholder="Mileage at time of work" />\
     <input type="text" id="title" class="log title" placeholder="Title" maxlength="40"/>\
@@ -294,7 +283,7 @@
           model: this.model
         });
         $('div#content').html(fullLogItemView.render().el);
-        return Breadcrumbs.addOne("#" + this.model.get("title"));
+        return Breadcrumbs.addOne(this.model.get("title"));
       }
     });
     VehicleAddLogView = Backbone.View.extend({
@@ -414,7 +403,6 @@
       },
       initialize: function() {
         Vehicles.bind('add', this.addOne, this);
-        Vehicles.bind('all', this.updateCount, this);
         Vehicles.bind('reset', this.addAll, this);
         return Vehicles.fetch();
       },
@@ -422,9 +410,6 @@
         $(this.el).html(Mustache.render(this.template));
         Breadcrumbs.render().addOne("Vehicles");
         return this;
-      },
-      updateCount: function() {
-        return this.$("span.count").html("(" + Vehicles.length + ")");
       },
       addOne: function(vehicle) {
         var vehicleView;
