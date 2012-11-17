@@ -25,18 +25,13 @@ input {
 }
 
 .header {
-  float: left;
-  width: 100%;
   margin: 0em 1em 1em 0em;
   padding-bottom: 1em;
   border-bottom: solid gray;
 }
 
-.panel {
-  float: left;
-  padding-right: 1em;
-  max-width: 98%;
-  min-width: 275px;
+span.menu {
+  display:block;
 }
 
 li.menu {
@@ -45,12 +40,9 @@ li.menu {
   margin: .15em 0 0 0;
   list-style-type: none;
   min-width: 275px;
-  height: 1.5em;
-  display: block;
-}
-
-li.menu:hover .del {
-  display: block;
+  min-height: 1.5em;
+  height: auto;
+  width: 100%;
 }
 
 ul.each_vehicle {
@@ -65,42 +57,12 @@ ul.log {
   padding: 0;
 }
 
-span.menu {
-  float: left;
-  width: 90%;
-}
-
 span.menu:hover {
-  cursor: pointer;
-}
-
-span.del {
-  float: right;
-  display: none;
-}
-
-span.del:hover {
   cursor: pointer;
 }
 
 div#dialog {
   display: none;
-}
-
-.show_hide {
-  background-color: #E0E0E0;
-  display: none;
-  line-height:3px;
-  padding: 0 3px 7px 3px;
-}
-
-.show_hide_show {
-  display: inline-block;
-}
-
-span.show_hide:hover {
-  background-color: #C0C0C0;
-  cursor: pointer;
 }
 
 div.view_container {
@@ -117,10 +79,33 @@ div.view_container {
   cursor: pointer;
 }
 
-.add_margin {
-  margin-bottom: 1em;
+ul.breadcrumbs {
+  padding-left: 0;
+  margin-left: 0;
 }
 
-span.cost {
-  float: right;
+li.breadcrumb {
+  border-top: solid 1px gray;
+  border-bottom: solid 1px gray;
+  border-right: solid 1px gray;
+  display: inline;
+  padding: .75em;
+  background: lightgray;
+  left: 0px;
+}
+
+li.breadcrumb:last-child {
+  border: none;
+  background: none;
+  visibility:hidden;
+}
+
+li.breadcrumb:hover {
+  cursor: pointer;
+  background: #999999;
+}
+
+li.breadcrumb:last-child:hover {
+  background: none;
+  cursor: default;
 }

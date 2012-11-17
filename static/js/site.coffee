@@ -5,28 +5,25 @@ $ ->
   templates = {}
   templates.base = '
   <div class="header">
-      <h1>ZoomZoom</h1>
-      <div class="subtitle">Maintenance logger for your vehicles</div>
-      <div id="dialog" title="Confirm">
-        <p>
-          <span class="ui-icon ui-icon-alert" style="float: left; margin: .2em .2em 0 0;"></span>
-          <span class="alert_content"></span>
-        </p>
-      </div>
+    <h1>ZoomZoom</h1>
+    <div class="subtitle">Maintenance logger for your vehicles</div>
+  </div>
+  <div id="head_nav"></div>
+  <div id="content"></div>
+  <div id="dialog" title="Confirm">
+    <p>
+      <span class="ui-icon ui-icon-alert" style="float: left; margin: .2em .2em 0 0;"></span>
+      <span class="alert_content"></span>
+    </p>
   </div>
   '
-  templates.center = '
-  '
-  templates.right = '
-  '
-  templates.vehicle = '
-  <span class="menu">{{name}}</span><span class="del">x</span>
-  '
+  templates.breadcrumb = '{{title}}'
+  templates.breadcrumbs = ''
+  templates.vehicle = '<span class="menu">{{name}}</span>'
   templates.vehicles = '
   <div class="title">
     <h3 class="vehicles">Vehicles</h3>
     <span class="count"></span>
-    <span class="show_hide">...</span>
   </div>
   <div class="view_container">
     <ul class="each_vehicle"></ul>
@@ -34,31 +31,54 @@ $ ->
     <button class="add_vehicle">Add Vehicle</button>
   </div>
   '
-  templates.toolbar = ''
   templates.vehicle_log = '
   <div class="title">
     <h3 class="vehicle_name">{{name}}</h3>
-    <span class="show_hide">...</span>
   </div>
   <div class="view_container">
     <ul class="log"></ul>
   </div>
+  <div>
+    <button class="add_log_item">Add Log Item</button>
+    <button class="edit">Edit Vehicle</button>
+    <button class="delete">Delete Vehicle</button>
+  </div>
   '
   templates.vehicle_log_item = '
   <span class="menu">
-    <span>{{title}}</span>
-    <span class="cost">{{cost}}</span>
+    <span class="title">{{title}}</span>
   </span>
-  <span class="del">x</span>
+  '
+  templates.vehicle_log_item_full = '
+  <div class="view_container">
+    <h3 class="title">{{title}}</h3>
+    <ul>
+      <li>
+        <span class="label">Miles:</span>
+        <span class="miles">{{miles}}</span>
+      </li>
+      <li>
+        <span class="label">Cost:</span>
+        <span class="cost">{{cost}}</span>
+      </li>
+      <li>
+        <span class="label">Description:</span>
+        <span class="description">{{description}}</span>
+      </li>
+    </ul>
+  </div>
+  <div>
+    <button class="edit">Edit Log Item</button>
+    <button class="delete">Delete Log Item</button>
+  </div>
   '
   templates.vehicle_add_log = '
   <div class="title">
     <h3 class="add_log_title">Add Log Entry</h3>
-    <span class="show_hide">...</span>
   </div>
   <div class="view_container">
     <input type="text" id="miles" class="log miles" placeholder="Mileage at time of work" />
-    <input type="text" id="title" class="log title" placeholder="Title" />
+    <input type="text" id="title" class="log title" placeholder="Title" maxlength="40"/>
     <input type="text" id="description" class="log desc" placeholder="Description" />
     <input type="text" id="cost" class="log cost" placeholder="Cost" />
     <button class="add_log">Add Log Entry</button>
@@ -109,17 +129,6 @@ $ ->
   LogItems.fetch()
 
   # Views
-  ToolBarView = Backbone.View.extend
-    tagName: "div"
-    className: "toolbar panel"
-    template: templates.toolbar
-
-    render: ->
-      $(@el).html Mustache.render @template
-      vehiclesView = new VehiclesView
-      $(@el).append vehiclesView.el
-      @
-
   LogView = Backbone.View.extend
     tagName: "div"
     className: "vehicle_log"
@@ -130,12 +139,14 @@ $ ->
       LogItems.bind 'add', @addOne, @
       LogItems.bind 'reset', @addAll, @
       @render()
-    
+
     events:
-      'click div.title' : 'toggleVisible'
+      'click button.add_log_item': 'showAddLog'
+      'click button.delete':'delVehicle'
 
     render: ->
       $(@el).html Mustache.render @template, @model.attributes
+      Breadcrumbs.addOne(@model.get "name")
       @
 
     addOne: (logItem) ->
@@ -145,99 +156,18 @@ $ ->
       @
 
     addAll: ->
-      _.each(LogItems.where("vehicleId":@model.id),@addOne,@)
+      logItems = LogItems.where("vehicleId":@model.id)
+      if logItems[0]
+        _.each(logItems,@addOne,@)
+      else
+        @$("ul.log").html "No log items."
+
       @
 
-    toggleVisible: ->
-      @$('.view_container', @el).toggle()
-      @$('.show_hide', @el).toggleClass('show_hide_show')
-      @$('div.title', @el).toggleClass('add_margin')
-      @
-
-  LogItemView = Backbone.View.extend
-    tagName: "li"
-    className: "menu"
-    template: templates.vehicle_log_item
-
-    events:
-      'click span.del':'delLogItem'
-
-    render: ->
-      $(@el).html Mustache.render @template, @model.attributes
-      @
-
-    delLogItem: ->
-      # display the "are you sure" dialog
-      $("span.alert_content").html "This maintenance item will be permanently deleted and cannot be recovered. Are you sure?"
-      $("div#dialog").dialog
-        resizable: false
-        modal: true
-        width: "50%"
-        title: "Confirm Delete"
-        buttons:
-            "Delete": =>
-                # clicked delete, delete the vehicle
-                $("div#dialog").dialog( "close" )
-                @model.destroy success: =>
-                  # remove from the ui on successful delete
-                  $(@el).remove()
-            Cancel: ->
-                # clicked cancel, don't delete it. just close the dialog
-                $(@).dialog( "close" )
-      @
-
-  VehicleAddLogView = Backbone.View.extend
-    tagName: "div"
-    className: "vehicle_add_log"
-    template: templates.vehicle_add_log
-
-    events:
-      'click button.add_log': 'createLogItem'
-      'keypress input'  : 'keyListener'
-      'click div.title' : 'toggleVisible'
-
-    render: ->
-      $(@el).html Mustache.render @template, @model.attributes
-      @
-
-    createLogItem: ->
-      # if there is text in the log title field we'll create it
-      if !@$('input.title').val()
-        return
-      form_vals = {}
-      form_vals.vehicleId = @model.id
-      _.each @$('input'), (field) ->
-        form_vals[$(field).attr('id')] = $(field).val()
-      console.log form_vals
-      LogItems.create(form_vals)
-      # clear the text in all fields to prepare for next input
-      @$('input').val('')
-      @
-
-    keyListener: (key) ->
-      # let the user press -return- key unstead of clicking Add
-      if key.keyCode is 13
-        @createLogItem()
-      @
-
-    toggleVisible: ->
-      @$('.view_container', @el).toggle()
-      @$('.show_hide', @el).toggleClass('show_hide_show')
-      @$('div.title', @el).toggleClass('add_margin')
-      @
-
-  VehicleView = Backbone.View.extend
-    tagName: "li"
-    className: "menu"
-    template: templates.vehicle
-
-    events:
-      'click span.del':'delVehicle'
-      'click span.menu': 'showDetails'
-
-    render: ->
-      $(@el).html Mustache.render @template, @model.attributes
-      @
+    showAddLog: ->
+      vehicleAddLogView = new VehicleAddLogView model:@model
+      $('div#content').html vehicleAddLogView.render().el
+      Breadcrumbs.addOne("Add Log Item")
 
     delVehicle: ->
       # display the "are you sure" dialog
@@ -271,11 +201,158 @@ $ ->
     alertDismissed: ->
       @
 
+  FullLogItemView = Backbone.View.extend
+    tagName: "div"
+    className: "full_log"
+    template: templates.vehicle_log_item_full
+
+    events:
+      'click button.delete':'delLogItem'
+
+    render: ->
+      console.log @model
+      $(@el).html Mustache.render @template, @model.attributes
+      @
+
+    delLogItem: ->
+      # display the "are you sure" dialog
+      $("span.alert_content").html "This maintenance item will be permanently deleted and cannot be recovered. Are you sure?"
+      $("div#dialog").dialog
+        resizable: false
+        modal: true
+        width: "50%"
+        title: "Confirm Delete"
+        buttons:
+            "Delete": =>
+                # clicked delete, delete the vehicle
+                $("div#dialog").dialog( "close" )
+                @model.destroy success: =>
+                  # remove from the ui on successful delete
+                  $(@el).remove()
+            Cancel: ->
+                # clicked cancel, don't delete it. just close the dialog
+                $(@).dialog( "close" )
+      @
+
+  LogItemView = Backbone.View.extend
+    tagName: "li"
+    className: "menu"
+    template: templates.vehicle_log_item
+
+    events:
+      'click span.menu': 'renderFull'
+
+    render: ->
+      $(@el).html Mustache.render @template, @model.attributes
+      @
+
+    renderFull: ->
+      fullLogItemView = new FullLogItemView model:@model
+      $('div#content').html fullLogItemView.render().el
+      Breadcrumbs.addOne("#"+@model.get "title")
+
+  VehicleAddLogView = Backbone.View.extend
+    tagName: "div"
+    className: "vehicle_add_log"
+    template: templates.vehicle_add_log
+
+    events:
+      'click button.add_log': 'createLogItem'
+      'keypress input'  : 'keyListener'
+
+    render: ->
+      $(@el).html Mustache.render @template, @model.attributes
+      @
+
+    createLogItem: ->
+      # if there is text in the log title field we'll create it
+      if !@$('input.title').val()
+        return
+      form_vals = {}
+      form_vals.vehicleId = @model.id
+      _.each @$('input'), (field) ->
+        form_vals[$(field).attr('id')] = $(field).val()
+      console.log form_vals
+      LogItems.create(form_vals)
+      # clear the text in all fields to prepare for next input
+      @$('input').val('')
+      @
+
+    keyListener: (key) ->
+      # let the user press -return- key unstead of clicking Add
+      if key.keyCode is 13
+        @createLogItem()
+      @
+
+  VehicleView = Backbone.View.extend
+    tagName: "li"
+    className: "menu"
+    template: templates.vehicle
+
+    events:
+      'click span.menu': 'showDetails'
+
+    render: ->
+      $(@el).html Mustache.render @template, @model.attributes
+      @
+
     showDetails: ->
       vehicleLogView = new LogView model:@model
-      $('div.center_container').html vehicleLogView.addAll().el
-      vehicleAddLogView = new VehicleAddLogView model:@model
-      $('div.right_container').html vehicleAddLogView.render().el
+      $('div#content').html vehicleLogView.addAll().el
+
+  BreadcrumbsView = Backbone.View.extend
+    tagName: 'ul'
+    className: 'breadcrumbs'
+    template: templates.breadcrumbs
+
+    render: ->
+      $(@el).html Mustache.render @template
+      console.log "crumby render"
+      @
+
+    addOne: (name) ->
+      breadcrumbView = new BreadcrumbView model:name
+      $(@el).append breadcrumbView.render().el
+      @
+
+  # breadcrumbs global
+  Breadcrumbs = new BreadcrumbsView
+
+  BreadcrumbView = Backbone.View.extend
+    tagName: 'li'
+    className: 'breadcrumb'
+    template: templates.breadcrumb
+
+    events:
+      'click': 'followBreadcrumb'
+
+    render: ->
+      console.log @model
+      $(@el).html Mustache.render @template ,title: @model
+      @
+
+    followBreadcrumb: ->
+      name = $(@el).html()
+
+      if name is "Add Log Item"
+        return @
+
+      @removeCrumbs()
+
+      if name is "Vehicles"
+        vehiclesView = new VehiclesView
+        $("div#content").html vehiclesView.el
+        return @
+
+      vehicle = Vehicles.where("name":name)
+      vehicleLogView = new LogView model:vehicle[0]
+      $('div#content').html vehicleLogView.addAll().el
+      @
+
+    removeCrumbs: ->
+      $(@el).nextAll().remove()
+      $(@el).remove()
+      @
 
   VehiclesView = Backbone.View.extend
     tagName: "div"
@@ -285,7 +362,6 @@ $ ->
     events:
       'click .add_vehicle' : 'createVehicle'
       'keypress input.name' : 'keyListener'
-      'click div.title' : 'toggleVisible'
 
     initialize: ->
       # make things happen when the collection updates
@@ -297,6 +373,7 @@ $ ->
 
     render: ->
       $(@el).html Mustache.render @template
+      Breadcrumbs.render().addOne("Vehicles")
       @
 
     updateCount: ->
@@ -330,47 +407,23 @@ $ ->
         @createVehicle()
       @
 
-    toggleVisible: ->
-      @$('.view_container', @el).toggle()
-      @$('.show_hide', @el).toggleClass('show_hide_show')
-      @$('div.title', @el).toggleClass('add_margin')
-      @
-
-  CenterContainerView = Backbone.View.extend
-    tagName: "div"
-    className: "center_container panel"
-    template: templates.center
-
-    render: ->
-      $(@el).html Mustache.render @template
-      @
-
-  RightContainerView = Backbone.View.extend
-    tagName: "div"
-    className: "right_container panel"
-    template: templates.right
-
-    render: ->
-      $(@el).html Mustache.render @template
-      @
-
   # App Loader View
   MainView = Backbone.View.extend
     el: $("body")
     template: templates.base
 
     initialize: ->
-      @toolBarView = new ToolBarView
-      @centerContainerView = new CenterContainerView
-      @rightContainerView = new RightContainerView
+      @vehiclesView = new VehiclesView
 
     render: ->
       $(@el).html Mustache.render @template
-      $(@el).append @toolBarView.render().el
-      $(@el).append @centerContainerView.render().el
-      $(@el).append @rightContainerView.render().el
+      @
+
+    addContent: ->
+      $("div#head_nav", @el).html Breadcrumbs.el
+      $("div#content", @el).html @vehiclesView.el
       @
 
   # Create the app
   mainView = new MainView
-  mainView.render()
+  mainView.render().addContent()
