@@ -66,10 +66,29 @@ $ ->
   '
   templates.vehicle_add_log = '
   <div class="view_container">
-    <input type="text" id="miles" class="log miles" placeholder="Mileage at time of work" />
-    <input type="text" id="title" class="log title" placeholder="Title" maxlength="40"/>
-    <input type="text" id="description" class="log desc" placeholder="Description" />
-    <input type="text" id="cost" class="log cost" placeholder="Cost" />
+    {{#vehicleId}}
+    <input type="hidden" value="{{vehicleId}}" id="vehicleId"/>
+    {{/vehicleId}}
+    <input type="text" id="miles" class="log miles" placeholder="Mileage at time of work" value="{{miles}}" />
+    <input type="text" id="title" class="log title" placeholder="Title" value="{{title}}" maxlength="40"/>
+    <textarea id="description" class="log description" placeholder="Description">{{description}}</textarea>
+    <input type="text" id="cost" class="log cost" placeholder="Cost" value="{{cost}}" />
+    <button class="add_log">Add Log Entry</button>
+  </div>
+  '
+
+  templates.vehicle_edit_log = '
+  <div class="view_container">
+    {{#id}}
+    <input type="hidden" value="{{id}}" id="id"/>
+    {{/id}}
+    {{#vehicleId}}
+    <input type="hidden" value="{{vehicleId}}" id="vehicleId"/>
+    {{/vehicleId}}
+    <input type="text" id="miles" class="log miles" placeholder="Mileage at time of work" value="{{miles}}" />
+    <input type="text" id="title" class="log title" placeholder="Title" value="{{title}}" maxlength="40"/>
+    <textarea id="description" class="log description" placeholder="Description">{{description}}</textarea>
+    <input type="text" id="cost" class="log cost" placeholder="Cost" value="{{cost}}" />
     <button class="add_log">Add Log Entry</button>
   </div>
   '
@@ -176,15 +195,6 @@ $ ->
             Cancel: ->
                 # clicked cancel, don't delete it. just close the dialog
                 $(@).dialog( "close" )
-
-      # test for phonegap api
-      navigator.notification.alert(
-        'You are the winner!',  #message
-        @alertDismissed,         #callback
-        'Game Over',            #title
-        'Done'                  #buttonName
-      )
-      navigator.notification.vibrate 2000
       @
 
     alertDismissed: ->
@@ -197,11 +207,17 @@ $ ->
 
     events:
       'click button.delete':'delLogItem'
+      'click button.edit':'editLogItem'
 
     render: ->
-      console.log @model
       $(@el).html Mustache.render @template, @model.attributes
       @
+
+    editLogItem: ->
+      vehicleEditLogView = new VehicleEditLogView model:@model
+      $('div#content').html vehicleEditLogView.render().el
+      $('button.add_log').html("Save")
+      Breadcrumbs.addOne("EDIT")
 
     delLogItem: ->
       # display the "are you sure" dialog
@@ -240,6 +256,41 @@ $ ->
       $('div#content').html fullLogItemView.render().el
       Breadcrumbs.addOne(@model.get "title")
 
+  VehicleEditLogView = Backbone.View.extend
+    tagName: "div"
+    className: "vehicle_edit_log"
+    template: templates.vehicle_edit_log
+
+    events:
+      'click button.add_log': 'saveLogItem'
+      'keypress input'  : 'keyListener'
+
+    render: ->
+      $(@el).html Mustache.render @template, @model.attributes
+      @
+
+    keyListener: (key) ->
+      # let the user press -return- key unstead of clicking Add
+      if key.keyCode is 13
+        @saveLogItem()
+      @
+
+    saveLogItem: ->
+      # if there is text in the log title field we'll create it
+      if !@$('input.title').val()
+        return
+      form_vals = {}
+      form_vals.vehicleId = @model.id
+      _.each @$('input'), (field) ->
+        form_vals[$(field).attr('id')] = $(field).val()
+      _.each @$('textarea'), (field) ->
+        form_vals[$(field).attr('id')] = $(field).val()
+      logItem = LogItems.get form_vals.id
+      logItem.save form_vals,
+        success: ->
+          navigator.notification.vibrate 500
+      @
+
   VehicleAddLogView = Backbone.View.extend
     tagName: "div"
     className: "vehicle_add_log"
@@ -261,10 +312,12 @@ $ ->
       form_vals.vehicleId = @model.id
       _.each @$('input'), (field) ->
         form_vals[$(field).attr('id')] = $(field).val()
-      console.log form_vals
+      _.each @$('textarea'), (field) ->
+        form_vals[$(field).attr('id')] = $(field).val()
       LogItems.create(form_vals)
       # clear the text in all fields to prepare for next input
       @$('input').val('')
+      @$('textarea').val('')
       @
 
     keyListener: (key) ->
@@ -296,7 +349,6 @@ $ ->
 
     render: ->
       $(@el).html Mustache.render @template
-      console.log "crumby render"
       @
 
     addOne: (name) ->
@@ -316,7 +368,6 @@ $ ->
       'click': 'followBreadcrumb'
 
     render: ->
-      console.log @model
       $(@el).html Mustache.render @template ,title: @model
       @
 

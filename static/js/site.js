@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   $(function() {
-    var BreadcrumbView, Breadcrumbs, BreadcrumbsView, FullLogItemView, LogItem, LogItemView, LogItems, LogView, MainView, Vehicle, VehicleAddLogView, VehicleList, VehicleView, Vehicles, VehiclesView, mainView, templates;
+    var BreadcrumbView, Breadcrumbs, BreadcrumbsView, FullLogItemView, LogItem, LogItemView, LogItems, LogView, MainView, Vehicle, VehicleAddLogView, VehicleEditLogView, VehicleList, VehicleView, Vehicles, VehiclesView, mainView, templates;
     templates = {};
     templates.base = '\
   <div class="header">\
@@ -68,10 +68,28 @@
   ';
     templates.vehicle_add_log = '\
   <div class="view_container">\
-    <input type="text" id="miles" class="log miles" placeholder="Mileage at time of work" />\
-    <input type="text" id="title" class="log title" placeholder="Title" maxlength="40"/>\
-    <input type="text" id="description" class="log desc" placeholder="Description" />\
-    <input type="text" id="cost" class="log cost" placeholder="Cost" />\
+    {{#vehicleId}}\
+    <input type="hidden" value="{{vehicleId}}" id="vehicleId"/>\
+    {{/vehicleId}}\
+    <input type="text" id="miles" class="log miles" placeholder="Mileage at time of work" value="{{miles}}" />\
+    <input type="text" id="title" class="log title" placeholder="Title" value="{{title}}" maxlength="40"/>\
+    <textarea id="description" class="log description" placeholder="Description">{{description}}</textarea>\
+    <input type="text" id="cost" class="log cost" placeholder="Cost" value="{{cost}}" />\
+    <button class="add_log">Add Log Entry</button>\
+  </div>\
+  ';
+    templates.vehicle_edit_log = '\
+  <div class="view_container">\
+    {{#id}}\
+    <input type="hidden" value="{{id}}" id="id"/>\
+    {{/id}}\
+    {{#vehicleId}}\
+    <input type="hidden" value="{{vehicleId}}" id="vehicleId"/>\
+    {{/vehicleId}}\
+    <input type="text" id="miles" class="log miles" placeholder="Mileage at time of work" value="{{miles}}" />\
+    <input type="text" id="title" class="log title" placeholder="Title" value="{{title}}" maxlength="40"/>\
+    <textarea id="description" class="log description" placeholder="Description">{{description}}</textarea>\
+    <input type="text" id="cost" class="log cost" placeholder="Cost" value="{{cost}}" />\
     <button class="add_log">Add Log Entry</button>\
   </div>\
   ';
@@ -221,8 +239,6 @@
             }
           }
         });
-        navigator.notification.alert('You are the winner!', this.alertDismissed, 'Game Over', 'Done');
-        navigator.notification.vibrate(2000);
         return this;
       },
       alertDismissed: function() {
@@ -234,12 +250,21 @@
       className: "full_log",
       template: templates.vehicle_log_item_full,
       events: {
-        'click button.delete': 'delLogItem'
+        'click button.delete': 'delLogItem',
+        'click button.edit': 'editLogItem'
       },
       render: function() {
-        console.log(this.model);
         $(this.el).html(Mustache.render(this.template, this.model.attributes));
         return this;
+      },
+      editLogItem: function() {
+        var vehicleEditLogView;
+        vehicleEditLogView = new VehicleEditLogView({
+          model: this.model
+        });
+        $('div#content').html(vehicleEditLogView.render().el);
+        $('button.add_log').html("Save");
+        return Breadcrumbs.addOne("EDIT");
       },
       delLogItem: function() {
         var _this = this;
@@ -286,6 +311,42 @@
         return Breadcrumbs.addOne(this.model.get("title"));
       }
     });
+    VehicleEditLogView = Backbone.View.extend({
+      tagName: "div",
+      className: "vehicle_edit_log",
+      template: templates.vehicle_edit_log,
+      events: {
+        'click button.add_log': 'saveLogItem',
+        'keypress input': 'keyListener'
+      },
+      render: function() {
+        $(this.el).html(Mustache.render(this.template, this.model.attributes));
+        return this;
+      },
+      keyListener: function(key) {
+        if (key.keyCode === 13) this.saveLogItem();
+        return this;
+      },
+      saveLogItem: function() {
+        var form_vals, logItem;
+        if (!this.$('input.title').val()) return;
+        form_vals = {};
+        form_vals.vehicleId = this.model.id;
+        _.each(this.$('input'), function(field) {
+          return form_vals[$(field).attr('id')] = $(field).val();
+        });
+        _.each(this.$('textarea'), function(field) {
+          return form_vals[$(field).attr('id')] = $(field).val();
+        });
+        logItem = LogItems.get(form_vals.id);
+        logItem.save(form_vals, {
+          success: function() {
+            return navigator.notification.vibrate(500);
+          }
+        });
+        return this;
+      }
+    });
     VehicleAddLogView = Backbone.View.extend({
       tagName: "div",
       className: "vehicle_add_log",
@@ -306,9 +367,12 @@
         _.each(this.$('input'), function(field) {
           return form_vals[$(field).attr('id')] = $(field).val();
         });
-        console.log(form_vals);
+        _.each(this.$('textarea'), function(field) {
+          return form_vals[$(field).attr('id')] = $(field).val();
+        });
         LogItems.create(form_vals);
         this.$('input').val('');
+        this.$('textarea').val('');
         return this;
       },
       keyListener: function(key) {
@@ -341,7 +405,6 @@
       template: templates.breadcrumbs,
       render: function() {
         $(this.el).html(Mustache.render(this.template));
-        console.log("crumby render");
         return this;
       },
       addOne: function(name) {
@@ -362,7 +425,6 @@
         'click': 'followBreadcrumb'
       },
       render: function() {
-        console.log(this.model);
         $(this.el).html(Mustache.render(this.template, {
           title: this.model
         }));

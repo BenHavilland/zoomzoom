@@ -24,6 +24,11 @@ input {
   width: 90%;
 }
 
+textarea {
+  display: block;
+  width: 90%;
+}
+
 .header {
   margin: 0em 1em 1em 0em;
   padding-bottom: 1em;
