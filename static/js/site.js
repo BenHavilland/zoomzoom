@@ -90,6 +90,8 @@
         Vehicle.__super__.constructor.apply(this, arguments);
       }
 
+      Vehicle.prototype.name = "Vehicle";
+
       Vehicle.prototype.defaults = function() {
         return {
           isAwesome: "yes"
@@ -110,6 +112,8 @@
       function LogItem() {
         LogItem.__super__.constructor.apply(this, arguments);
       }
+
+      LogItem.prototype.name = "LogItem";
 
       LogItem.prototype.defaults = function() {
         return {
@@ -175,7 +179,7 @@
       },
       render: function() {
         $(this.el).html(Mustache.render(this.template, this.model.attributes));
-        Breadcrumbs.addOne(this.model.get("name"));
+        Breadcrumbs.addOne(this.model);
         return this;
       },
       addOne: function(logItem) {
@@ -246,6 +250,10 @@
         $(this.el).html(Mustache.render(this.template, this.model.attributes));
         return this;
       },
+      addCrumb: function() {
+        Breadcrumbs.addOne(this.model);
+        return this;
+      },
       editLogItem: function() {
         var vehicleEditLogView;
         vehicleEditLogView = new VehicleEditLogView({
@@ -253,7 +261,7 @@
         });
         $('div#content').html(vehicleEditLogView.render().el);
         $('button.add_log').html("Save");
-        return Breadcrumbs.addOne("EDIT");
+        return Breadcrumbs.addOne("Edit");
       },
       delLogItem: function() {
         var _this = this;
@@ -297,7 +305,7 @@
           model: this.model
         });
         $('div#content').html(fullLogItemView.render().el);
-        return Breadcrumbs.addOne(this.model.get("title"));
+        return Breadcrumbs.addOne(this.model);
       }
     });
     VehicleEditLogView = Backbone.View.extend({
@@ -459,10 +467,10 @@
         $(this.el).html(Mustache.render(this.template));
         return this;
       },
-      addOne: function(name) {
+      addOne: function(model) {
         var breadcrumbView;
         breadcrumbView = new BreadcrumbView({
-          model: name
+          model: model
         });
         $(this.el).append(breadcrumbView.render().el);
         return this;
@@ -477,28 +485,58 @@
         'click': 'followBreadcrumb'
       },
       render: function() {
-        $(this.el).html(Mustache.render(this.template, {
-          title: this.model
-        }));
+        var name, title;
+        if (_.isObject(this.model)) {
+          title = this.model.get("title");
+          if (title) {
+            $(this.el).html(Mustache.render(this.template, {
+              title: title
+            }));
+            return this;
+          }
+          name = this.model.get("name");
+          if (name) {
+            $(this.el).html(Mustache.render(this.template, {
+              title: name
+            }));
+            return this;
+          }
+        }
+        if (_.isString(this.model)) {
+          $(this.el).html(Mustache.render(this.template, {
+            title: this.model
+          }));
+          return this;
+        }
         return this;
       },
       followBreadcrumb: function() {
-        var name, vehicle, vehicleLogView, vehiclesView;
+        var fullLogItemView, name, vehicleLogView, vehiclesView;
         name = $(this.el).html();
-        if (name === "Add Log Item") return this;
-        this.removeCrumbs();
-        if (name === "Vehicles") {
-          vehiclesView = new VehiclesView;
-          $("div#content").html(vehiclesView.el);
+        if ($(this.el).is(':last-child')) return this;
+        if (_.isString(this.model)) {
+          if (name === "Vehicles") {
+            vehiclesView = new VehiclesView;
+            $("div#content").html(vehiclesView.el);
+          }
           return this;
         }
-        vehicle = Vehicles.where({
-          "name": name
-        });
-        vehicleLogView = new LogView({
-          model: vehicle[0]
-        });
-        $('div#content').html(vehicleLogView.addAll().el);
+        if (this.model.name === "Vehicle") {
+          vehicleLogView = new LogView({
+            model: this.model
+          });
+          this.removeCrumbs();
+          $('div#content').html(vehicleLogView.render().addAll().el);
+          return this;
+        }
+        if (this.model.name === "LogItem") {
+          fullLogItemView = new FullLogItemView({
+            model: this.model
+          });
+          this.removeCrumbs();
+          $('div#content').html(fullLogItemView.render().addCrumb().el);
+          return this;
+        }
         return this;
       },
       removeCrumbs: function() {

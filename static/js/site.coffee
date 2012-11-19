@@ -93,7 +93,7 @@ $ ->
   # Models
   # coming soon...
   class Vehicle extends Backbone.Model
-
+    name: "Vehicle"
     # make all vehicles awesome
     defaults: ->
       isAwesome: "yes"
@@ -103,6 +103,7 @@ $ ->
       console.log "vehicle initialized"
 
   class LogItem extends Backbone.Model
+    name: "LogItem"
     # make all vehicles awesome
     defaults: ->
       added: new Date()
@@ -151,7 +152,7 @@ $ ->
 
     render: ->
       $(@el).html Mustache.render @template, @model.attributes
-      Breadcrumbs.addOne(@model.get "name")
+      Breadcrumbs.addOne(@model)
       @
 
     addOne: (logItem) ->
@@ -210,11 +211,15 @@ $ ->
       $(@el).html Mustache.render @template, @model.attributes
       @
 
+    addCrumb: ->
+      Breadcrumbs.addOne(@model)
+      @
+
     editLogItem: ->
       vehicleEditLogView = new VehicleEditLogView model:@model
       $('div#content').html vehicleEditLogView.render().el
       $('button.add_log').html("Save")
-      Breadcrumbs.addOne("EDIT")
+      Breadcrumbs.addOne("Edit")
 
     delLogItem: ->
       # display the "are you sure" dialog
@@ -251,7 +256,7 @@ $ ->
     renderFull: ->
       fullLogItemView = new FullLogItemView model:@model
       $('div#content').html fullLogItemView.render().el
-      Breadcrumbs.addOne(@model.get "title")
+      Breadcrumbs.addOne(@model)
 
   VehicleEditLogView = Backbone.View.extend
     tagName: "div"
@@ -415,8 +420,8 @@ $ ->
       $(@el).html Mustache.render @template
       @
 
-    addOne: (name) ->
-      breadcrumbView = new BreadcrumbView model:name
+    addOne: (model) ->
+      breadcrumbView = new BreadcrumbView model:model
       $(@el).append breadcrumbView.render().el
       @
 
@@ -432,25 +437,49 @@ $ ->
       'click': 'followBreadcrumb'
 
     render: ->
-      $(@el).html Mustache.render @template ,title: @model
+      if _.isObject @model
+
+        title = @model.get "title"
+        if title
+          $(@el).html Mustache.render @template ,title: title
+          return @
+
+        name = @model.get "name"
+        if name
+          $(@el).html Mustache.render @template ,title: name
+          return @
+
+      if _.isString @model
+        $(@el).html Mustache.render @template ,title: @model
+        return @
       @
 
     followBreadcrumb: ->
       name = $(@el).html()
 
-      if name is "Add Log Item"
+      # if it's the last item on the list disable nav
+      if $(@el).is(':last-child')
         return @
 
-      @removeCrumbs()
-
-      if name is "Vehicles"
-        vehiclesView = new VehiclesView
-        $("div#content").html vehiclesView.el
+      # if it's just text do a check
+      if _.isString @model
+        if name is "Vehicles"
+          vehiclesView = new VehiclesView
+          $("div#content").html vehiclesView.el
         return @
 
-      vehicle = Vehicles.where("name":name)
-      vehicleLogView = new LogView model:vehicle[0]
-      $('div#content').html vehicleLogView.addAll().el
+      if @model.name is "Vehicle"
+        vehicleLogView = new LogView model:@model
+        @removeCrumbs()
+        $('div#content').html vehicleLogView.render().addAll().el
+        return @
+
+      if @model.name is "LogItem"
+        fullLogItemView = new FullLogItemView model:@model
+        @removeCrumbs()
+        $('div#content').html fullLogItemView.render().addCrumb().el
+        return @
+
       @
 
     removeCrumbs: ->
