@@ -16,6 +16,11 @@ $ ->
       <span class="alert_content"></span>
     </p>
   </div>'
+  templates.notify =
+  '<div id="left"></div>
+  <div id="right"></div>
+  <div id="top"></div>
+  <div id="bottom"></div>'
   templates.breadcrumb = '{{title}}'
   templates.breadcrumbs = ''
   templates.vehicle = '<span class="menu">{{name}}</span>'
@@ -134,6 +139,41 @@ $ ->
   LogItems.fetch()
 
   # Views
+  NotifyView = Backbone.View.extend
+    tagName: 'div'
+    className: 'notify'
+    template: templates.notify
+
+    render: ->
+      $(@el).html Mustache.render @template
+      @
+
+    success: (message) ->
+      console.log message
+      if navigator.notification
+        navigator.notification.vibrate 100
+      $(@el)
+      .children()
+      .removeClass('failure')
+      .addClass('success')
+      .fadeIn 'slow', ->
+        $(@).fadeOut 'slow'
+      @
+
+    failure: ->
+      if navigator.notification
+        navigator.notification.vibrate 250
+      $(@el)
+      .children()
+      .removeClass('success')
+      .addClass('failure')
+      .fadeIn 'slow', ->
+        $(@).fadeOut 'slow'
+      @
+
+  # we need throughout the app
+  Notifier = new NotifyView
+
   LogView = Backbone.View.extend
     tagName: "div"
     className: "vehicle_log"
@@ -166,7 +206,6 @@ $ ->
         _.each(logItems,@addOne,@)
       else
         @$("ul.log").html "No log items."
-
       @
 
     showAddLog: ->
@@ -189,6 +228,7 @@ $ ->
                 @model.destroy success: =>
                   # remove from the ui on successful delete
                   $(@el).remove()
+                  Notifier.success("Vehicle Deleted")
             Cancel: ->
                 # clicked cancel, don't delete it. just close the dialog
                 $(@).dialog( "close" )
@@ -235,6 +275,7 @@ $ ->
                 @model.destroy success: =>
                   # remove from the ui on successful delete
                   $(@el).remove()
+                  Notifier.success("Log Item Deleted")
             Cancel: ->
                 # clicked cancel, don't delete it. just close the dialog
                 $(@).dialog( "close" )
@@ -289,7 +330,7 @@ $ ->
       logItem = LogItems.get form_vals.id
       logItem.save form_vals,
         success: ->
-          navigator.notification.vibrate 500
+          Notifier.success("Log item saved")
       @
 
   VehicleAddLogView = Backbone.View.extend
@@ -315,7 +356,9 @@ $ ->
         form_vals[$(field).attr('id')] = $(field).val()
       _.each @$('textarea'), (field) ->
         form_vals[$(field).attr('id')] = $(field).val()
-      LogItems.create(form_vals)
+      LogItems.create form_vals,
+        success: ->
+          Notifier.success("Created")
       # clear the text in all fields to prepare for next input
       @$('input').val('')
       @$('textarea').val('')
@@ -408,6 +451,7 @@ $ ->
       Vehicles.create({name: @input_vehicle_name.val()})
       # clear the text to prepare for next input
       @input_vehicle_name.val('')
+      Notifier.success("Vehicle Added")
       @
 
   BreadcrumbsView = Backbone.View.extend
@@ -501,6 +545,7 @@ $ ->
     addContent: ->
       $("div#head_nav", @el).html Breadcrumbs.el
       $("div#content", @el).html @vehiclesView.el
+      $(@el).append Notifier.render().el
       @
 
   # Create the app

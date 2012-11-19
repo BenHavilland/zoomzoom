@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   $(function() {
-    var BreadcrumbView, Breadcrumbs, BreadcrumbsView, FullLogItemView, LogItem, LogItemView, LogItems, LogView, MainView, Vehicle, VehicleAddLogView, VehicleAddView, VehicleEditLogView, VehicleList, VehicleView, Vehicles, VehiclesView, mainView, templates;
+    var BreadcrumbView, Breadcrumbs, BreadcrumbsView, FullLogItemView, LogItem, LogItemView, LogItems, LogView, MainView, Notifier, NotifyView, Vehicle, VehicleAddLogView, VehicleAddView, VehicleEditLogView, VehicleList, VehicleView, Vehicles, VehiclesView, mainView, templates;
     templates = {};
     templates.base = '<div class="header">\
     <h1>ZoomZoom</h1>\
@@ -17,6 +17,10 @@
       <span class="alert_content"></span>\
     </p>\
   </div>';
+    templates.notify = '<div id="left"></div>\
+  <div id="right"></div>\
+  <div id="top"></div>\
+  <div id="bottom"></div>';
     templates.breadcrumb = '{{title}}';
     templates.breadcrumbs = '';
     templates.vehicle = '<span class="menu">{{name}}</span>';
@@ -161,6 +165,31 @@
     Vehicles = new VehicleList;
     LogItems = new LogItems;
     LogItems.fetch();
+    NotifyView = Backbone.View.extend({
+      tagName: 'div',
+      className: 'notify',
+      template: templates.notify,
+      render: function() {
+        $(this.el).html(Mustache.render(this.template));
+        return this;
+      },
+      success: function(message) {
+        console.log(message);
+        if (navigator.notification) navigator.notification.vibrate(100);
+        $(this.el).children().removeClass('failure').addClass('success').fadeIn('slow', function() {
+          return $(this).fadeOut('slow');
+        });
+        return this;
+      },
+      failure: function() {
+        if (navigator.notification) navigator.notification.vibrate(250);
+        $(this.el).children().removeClass('success').addClass('failure').fadeIn('slow', function() {
+          return $(this).fadeOut('slow');
+        });
+        return this;
+      }
+    });
+    Notifier = new NotifyView;
     LogView = Backbone.View.extend({
       tagName: "div",
       className: "vehicle_log",
@@ -223,7 +252,8 @@
               $("div#dialog").dialog("close");
               return _this.model.destroy({
                 success: function() {
-                  return $(_this.el).remove();
+                  $(_this.el).remove();
+                  return Notifier.success("Vehicle Deleted");
                 }
               });
             },
@@ -276,7 +306,8 @@
               $("div#dialog").dialog("close");
               return _this.model.destroy({
                 success: function() {
-                  return $(_this.el).remove();
+                  $(_this.el).remove();
+                  return Notifier.success("Log Item Deleted");
                 }
               });
             },
@@ -338,7 +369,7 @@
         logItem = LogItems.get(form_vals.id);
         logItem.save(form_vals, {
           success: function() {
-            return navigator.notification.vibrate(500);
+            return Notifier.success("Log item saved");
           }
         });
         return this;
@@ -367,7 +398,11 @@
         _.each(this.$('textarea'), function(field) {
           return form_vals[$(field).attr('id')] = $(field).val();
         });
-        LogItems.create(form_vals);
+        LogItems.create(form_vals, {
+          success: function() {
+            return Notifier.success("Created");
+          }
+        });
         this.$('input').val('');
         this.$('textarea').val('');
         return this;
@@ -456,6 +491,7 @@
           name: this.input_vehicle_name.val()
         });
         this.input_vehicle_name.val('');
+        Notifier.success("Vehicle Added");
         return this;
       }
     });
@@ -558,6 +594,7 @@
       addContent: function() {
         $("div#head_nav", this.el).html(Breadcrumbs.el);
         $("div#content", this.el).html(this.vehiclesView.el);
+        $(this.el).append(Notifier.render().el);
         return this;
       }
     });
