@@ -3,10 +3,9 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   $(function() {
-    var BreadcrumbView, Breadcrumbs, BreadcrumbsView, FullLogItemView, LogItem, LogItemView, LogItems, LogView, MainView, Vehicle, VehicleAddLogView, VehicleEditLogView, VehicleList, VehicleView, Vehicles, VehiclesView, mainView, templates;
+    var BreadcrumbView, Breadcrumbs, BreadcrumbsView, FullLogItemView, LogItem, LogItemView, LogItems, LogView, MainView, Vehicle, VehicleAddLogView, VehicleAddView, VehicleEditLogView, VehicleList, VehicleView, Vehicles, VehiclesView, mainView, templates;
     templates = {};
-    templates.base = '\
-  <div class="header">\
+    templates.base = '<div class="header">\
     <h1>ZoomZoom</h1>\
     <div class="subtitle">Maintenance logger for your vehicles</div>\
   </div>\
@@ -17,35 +16,30 @@
       <span class="ui-icon ui-icon-alert" style="float: left; margin: .2em .2em 0 0;"></span>\
       <span class="alert_content"></span>\
     </p>\
-  </div>\
-  ';
+  </div>';
     templates.breadcrumb = '{{title}}';
     templates.breadcrumbs = '';
     templates.vehicle = '<span class="menu">{{name}}</span>';
-    templates.vehicles = '\
-  <div class="view_container">\
+    templates.vehicles = '<div class="view_container">\
     <ul class="each_vehicle"></ul>\
+    <button class="add_vehicle">Add Vehicle</button>\
+  </div>';
+    templates.vehicle_add = '<div class="view_container">\
     <input type="text" class="name" placeholder="Type new vehicle name" />\
     <button class="add_vehicle">Add Vehicle</button>\
-  </div>\
-  ';
-    templates.vehicle_log = '\
-  <div class="view_container">\
+  </div>';
+    templates.vehicle_log = '<div class="view_container">\
     <ul class="log"></ul>\
   </div>\
   <div>\
     <button class="add_log_item">Add Log Item</button>\
     <button class="edit">Edit Vehicle</button>\
     <button class="delete">Delete Vehicle</button>\
-  </div>\
-  ';
-    templates.vehicle_log_item = '\
-  <span class="menu">\
+  </div>';
+    templates.vehicle_log_item = '<span class="menu">\
     <span class="title">{{title}}</span>\
-  </span>\
-  ';
-    templates.vehicle_log_item_full = '\
-  <div class="view_container">\
+  </span>';
+    templates.vehicle_log_item_full = '<div class="view_container">\
     <ul>\
       <li>\
         <span class="label">Miles:</span>\
@@ -64,10 +58,8 @@
   <div>\
     <button class="edit">Edit Log Item</button>\
     <button class="delete">Delete Log Item</button>\
-  </div>\
-  ';
-    templates.vehicle_add_log = '\
-  <div class="view_container">\
+  </div>';
+    templates.vehicle_add_log = '<div class="view_container">\
     {{#vehicleId}}\
     <input type="hidden" value="{{vehicleId}}" id="vehicleId"/>\
     {{/vehicleId}}\
@@ -76,10 +68,8 @@
     <textarea id="description" class="log description" placeholder="Description">{{description}}</textarea>\
     <input type="text" id="cost" class="log cost" placeholder="Cost" value="{{cost}}" />\
     <button class="add_log">Add Log Entry</button>\
-  </div>\
-  ';
-    templates.vehicle_edit_log = '\
-  <div class="view_container">\
+  </div>';
+    templates.vehicle_edit_log = '<div class="view_container">\
     {{#id}}\
     <input type="hidden" value="{{id}}" id="id"/>\
     {{/id}}\
@@ -91,8 +81,7 @@
     <textarea id="description" class="log description" placeholder="Description">{{description}}</textarea>\
     <input type="text" id="cost" class="log cost" placeholder="Cost" value="{{cost}}" />\
     <button class="add_log">Add Log Entry</button>\
-  </div>\
-  ';
+  </div>';
     Vehicle = (function(_super) {
 
       __extends(Vehicle, _super);
@@ -398,6 +387,69 @@
         });
         return $('div#content').html(vehicleLogView.addAll().el);
       }
+    }, VehiclesView = Backbone.View.extend({
+      tagName: "div",
+      className: "vehicles",
+      template: templates.vehicles,
+      events: {
+        'click .add_vehicle': 'showAdd'
+      },
+      initialize: function() {
+        Vehicles.bind('add', this.addOne, this);
+        Vehicles.bind('reset', this.addAll, this);
+        return Vehicles.fetch();
+      },
+      render: function() {
+        $(this.el).html(Mustache.render(this.template));
+        Breadcrumbs.render().addOne("Vehicles");
+        return this;
+      },
+      addOne: function(vehicle) {
+        var vehicleView;
+        vehicleView = new VehicleView({
+          model: vehicle
+        });
+        this.$("ul.each_vehicle").append(vehicleView.render().el);
+        return this;
+      },
+      addAll: function() {
+        this.render();
+        Vehicles.each(this.addOne, this);
+        return this;
+      },
+      showAdd: function() {
+        var vehicleAddView;
+        vehicleAddView = new VehicleAddView;
+        $("div#content").html(vehicleAddView.render().el);
+        Breadcrumbs.addOne("Add Vehicle");
+        return this;
+      }
+    }));
+    VehicleAddView = Backbone.View.extend({
+      tagName: "div",
+      classname: "vehicle_add",
+      template: templates.vehicle_add,
+      events: {
+        'click .add_vehicle': 'createVehicle',
+        'keypress input.name': 'keyListener'
+      },
+      render: function() {
+        $(this.el).html(Mustache.render(this.template));
+        return this;
+      },
+      keyListener: function(key) {
+        if (key.keyCode === 13) this.createVehicle();
+        return this;
+      },
+      createVehicle: function() {
+        this.input_vehicle_name = this.$('input.name');
+        if (!this.input_vehicle_name.val()) return;
+        Vehicles.create({
+          name: this.input_vehicle_name.val()
+        });
+        this.input_vehicle_name.val('');
+        return this;
+      }
     });
     BreadcrumbsView = Backbone.View.extend({
       tagName: 'ul',
@@ -452,51 +504,6 @@
       removeCrumbs: function() {
         $(this.el).nextAll().remove();
         $(this.el).remove();
-        return this;
-      }
-    });
-    VehiclesView = Backbone.View.extend({
-      tagName: "div",
-      className: "vehicles",
-      template: templates.vehicles,
-      events: {
-        'click .add_vehicle': 'createVehicle',
-        'keypress input.name': 'keyListener'
-      },
-      initialize: function() {
-        Vehicles.bind('add', this.addOne, this);
-        Vehicles.bind('reset', this.addAll, this);
-        return Vehicles.fetch();
-      },
-      render: function() {
-        $(this.el).html(Mustache.render(this.template));
-        Breadcrumbs.render().addOne("Vehicles");
-        return this;
-      },
-      addOne: function(vehicle) {
-        var vehicleView;
-        vehicleView = new VehicleView({
-          model: vehicle
-        });
-        this.$("ul.each_vehicle").append(vehicleView.render().el);
-        return this;
-      },
-      addAll: function() {
-        this.render();
-        Vehicles.each(this.addOne, this);
-        return this;
-      },
-      createVehicle: function() {
-        this.input_vehicle_name = this.$('input.name');
-        if (!this.input_vehicle_name.val()) return;
-        Vehicles.create({
-          name: this.input_vehicle_name.val()
-        });
-        this.input_vehicle_name.val('');
-        return this;
-      },
-      keyListener: function(key) {
-        if (key.keyCode === 13) this.createVehicle();
         return this;
       }
     });

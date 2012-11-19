@@ -1,10 +1,10 @@
 # Load the application once the DOM is ready, using `jQuery.ready`:
 $ ->
 
-  # Templates
+  # Templates=
   templates = {}
-  templates.base = '
-  <div class="header">
+  templates.base =
+  '<div class="header">
     <h1>ZoomZoom</h1>
     <div class="subtitle">Maintenance logger for your vehicles</div>
   </div>
@@ -15,35 +15,35 @@ $ ->
       <span class="ui-icon ui-icon-alert" style="float: left; margin: .2em .2em 0 0;"></span>
       <span class="alert_content"></span>
     </p>
-  </div>
-  '
+  </div>'
   templates.breadcrumb = '{{title}}'
   templates.breadcrumbs = ''
   templates.vehicle = '<span class="menu">{{name}}</span>'
-  templates.vehicles = '
-  <div class="view_container">
+  templates.vehicles =
+  '<div class="view_container">
     <ul class="each_vehicle"></ul>
+    <button class="add_vehicle">Add Vehicle</button>
+  </div>'
+  templates.vehicle_add =
+  '<div class="view_container">
     <input type="text" class="name" placeholder="Type new vehicle name" />
     <button class="add_vehicle">Add Vehicle</button>
-  </div>
-  '
-  templates.vehicle_log = '
-  <div class="view_container">
+  </div>'
+  templates.vehicle_log =
+  '<div class="view_container">
     <ul class="log"></ul>
   </div>
   <div>
     <button class="add_log_item">Add Log Item</button>
     <button class="edit">Edit Vehicle</button>
     <button class="delete">Delete Vehicle</button>
-  </div>
-  '
-  templates.vehicle_log_item = '
-  <span class="menu">
+  </div>'
+  templates.vehicle_log_item =
+  '<span class="menu">
     <span class="title">{{title}}</span>
-  </span>
-  '
-  templates.vehicle_log_item_full = '
-  <div class="view_container">
+  </span>'
+  templates.vehicle_log_item_full =
+  '<div class="view_container">
     <ul>
       <li>
         <span class="label">Miles:</span>
@@ -62,10 +62,9 @@ $ ->
   <div>
     <button class="edit">Edit Log Item</button>
     <button class="delete">Delete Log Item</button>
-  </div>
-  '
-  templates.vehicle_add_log = '
-  <div class="view_container">
+  </div>'
+  templates.vehicle_add_log =
+  '<div class="view_container">
     {{#vehicleId}}
     <input type="hidden" value="{{vehicleId}}" id="vehicleId"/>
     {{/vehicleId}}
@@ -74,11 +73,10 @@ $ ->
     <textarea id="description" class="log description" placeholder="Description">{{description}}</textarea>
     <input type="text" id="cost" class="log cost" placeholder="Cost" value="{{cost}}" />
     <button class="add_log">Add Log Entry</button>
-  </div>
-  '
+  </div>'
 
-  templates.vehicle_edit_log = '
-  <div class="view_container">
+  templates.vehicle_edit_log =
+  '<div class="view_container">
     {{#id}}
     <input type="hidden" value="{{id}}" id="id"/>
     {{/id}}
@@ -90,8 +88,7 @@ $ ->
     <textarea id="description" class="log description" placeholder="Description">{{description}}</textarea>
     <input type="text" id="cost" class="log cost" placeholder="Cost" value="{{cost}}" />
     <button class="add_log">Add Log Entry</button>
-  </div>
-  '
+  </div>'
 
   # Models
   # coming soon...
@@ -342,6 +339,73 @@ $ ->
       vehicleLogView = new LogView model:@model
       $('div#content').html vehicleLogView.addAll().el
 
+    VehiclesView = Backbone.View.extend
+      tagName: "div"
+      className: "vehicles"
+      template: templates.vehicles
+
+      events:
+        'click .add_vehicle' : 'showAdd'
+
+      initialize: ->
+        # make things happen when the collection updates
+        Vehicles.bind 'add', @addOne, @
+        Vehicles.bind 'reset', @addAll, @
+        # load in the vehicles
+        Vehicles.fetch()
+
+      render: ->
+        $(@el).html Mustache.render @template
+        Breadcrumbs.render().addOne("Vehicles")
+        @
+
+      addOne: (vehicle) ->
+        # create and display the passed vehicle
+        vehicleView = new VehicleView model:vehicle
+        @$("ul.each_vehicle").append vehicleView.render().el
+        @
+
+      addAll: ->
+        # cycle through each vehicle and call addOne
+        @render()
+        Vehicles.each(@addOne,@)
+        @
+
+      showAdd: ->
+        vehicleAddView = new VehicleAddView
+        $("div#content").html vehicleAddView.render().el
+        Breadcrumbs.addOne("Add Vehicle")
+        @
+
+  VehicleAddView = Backbone.View.extend
+    tagName: "div"
+    classname: "vehicle_add"
+    template: templates.vehicle_add
+
+    events:
+      'click .add_vehicle' : 'createVehicle'
+      'keypress input.name' : 'keyListener'
+
+    render: ->
+      $(@el).html Mustache.render @template
+      @
+
+    keyListener: (key) ->
+      # let the user press -return- key unstead of clicking Add
+      if key.keyCode is 13
+        @createVehicle()
+      @
+
+    createVehicle: ->
+      @input_vehicle_name = @$('input.name')
+      # if there is text in the vehicle name field create it
+      if !@input_vehicle_name.val()
+        return
+      Vehicles.create({name: @input_vehicle_name.val()})
+      # clear the text to prepare for next input
+      @input_vehicle_name.val('')
+      @
+
   BreadcrumbsView = Backbone.View.extend
     tagName: 'ul'
     className: 'breadcrumbs'
@@ -392,55 +456,6 @@ $ ->
     removeCrumbs: ->
       $(@el).nextAll().remove()
       $(@el).remove()
-      @
-
-  VehiclesView = Backbone.View.extend
-    tagName: "div"
-    className: "vehicles"
-    template: templates.vehicles
-
-    events:
-      'click .add_vehicle' : 'createVehicle'
-      'keypress input.name' : 'keyListener'
-
-    initialize: ->
-      # make things happen when the collection updates
-      Vehicles.bind 'add', @addOne, @
-      Vehicles.bind 'reset', @addAll, @
-      # load in the vehicles
-      Vehicles.fetch()
-
-    render: ->
-      $(@el).html Mustache.render @template
-      Breadcrumbs.render().addOne("Vehicles")
-      @
-
-    addOne: (vehicle) ->
-      # create and display the passed vehicle
-      vehicleView = new VehicleView model:vehicle
-      @$("ul.each_vehicle").append vehicleView.render().el
-      @
-
-    addAll: ->
-      # cycle through each vehicle and call addOne
-      @render()
-      Vehicles.each(@addOne,@)
-      @
-
-    createVehicle: ->
-      @input_vehicle_name = @$('input.name')
-      # if there is text in the vehicle name field create it
-      if !@input_vehicle_name.val()
-        return
-      Vehicles.create({name: @input_vehicle_name.val()})
-      # clear the text to prepare for next input
-      @input_vehicle_name.val('')
-      @
-
-    keyListener: (key) ->
-      # let the user press -return- key unstead of clicking Add
-      if key.keyCode is 13
-        @createVehicle()
       @
 
   # App Loader View
