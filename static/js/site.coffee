@@ -34,6 +34,11 @@ $ ->
     <input type="text" class="name" placeholder="Type new vehicle name" />
     <button class="add_vehicle">Add Vehicle</button>
   </div>'
+  templates.vehicle_edit =
+  '<div class="view_container">
+    <input type="text" class="name" placeholder="Type new vehicle name" value="{{name}}" />
+    <button class="save">Save</button>
+  </div>'
   templates.vehicle_log =
   '<div class="view_container">
     <ul class="log"></ul>
@@ -149,9 +154,6 @@ $ ->
       @
 
     success: (message) ->
-      console.log message
-      if navigator.notification
-        navigator.notification.vibrate 100
       $(@el)
       .children()
       .removeClass('failure')
@@ -187,6 +189,7 @@ $ ->
 
     events:
       'click button.add_log_item': 'showAddLog'
+      'click button.edit': 'showEditVehicle'
       'click button.delete':'delVehicle'
 
     render: ->
@@ -212,6 +215,11 @@ $ ->
       vehicleAddLogView = new VehicleAddLogView model:@model
       $('div#content').html vehicleAddLogView.render().el
       Breadcrumbs.addOne("Add Log Item")
+
+    showEditVehicle: ->
+      vehicleEditView = new VehicleEditView model:@model
+      $('div#content').html vehicleEditView.render().el
+      Breadcrumbs.addOne("Edit")
 
     delVehicle: ->
       # display the "are you sure" dialog
@@ -320,6 +328,7 @@ $ ->
     saveLogItem: ->
       # if there is text in the log title field we'll create it
       if !@$('input.title').val()
+        Notifier.failure("Title required")
         return
       form_vals = {}
       form_vals.vehicleId = @model.id
@@ -349,6 +358,7 @@ $ ->
     createLogItem: ->
       # if there is text in the log title field we'll create it
       if !@$('input.title').val()
+        Notifier.failure("Title required")
         return
       form_vals = {}
       form_vals.vehicleId = @model.id
@@ -447,11 +457,34 @@ $ ->
       @input_vehicle_name = @$('input.name')
       # if there is text in the vehicle name field create it
       if !@input_vehicle_name.val()
+        Notifier.failure("Name required")
         return
       Vehicles.create({name: @input_vehicle_name.val()})
       # clear the text to prepare for next input
       @input_vehicle_name.val('')
       Notifier.success("Vehicle Added")
+      @
+
+  VehicleEditView = Backbone.View.extend
+    tagName: "div"
+    classname: "vehicle_add"
+    template: templates.vehicle_edit
+
+    events:
+      'click button.save': 'saveVehicle'
+
+    render: ->
+      $(@el).html Mustache.render @template, @model.attributes
+      @
+
+    saveVehicle: ->
+      # if there is text in the log title field we'll create it
+      if !@$('input.name').val()
+        Notifier.failure("Name required")
+        return
+      @model.save {name:@$('input.name').val()}
+        success: ->
+          Notifier.success("Log item saved")
       @
 
   BreadcrumbsView = Backbone.View.extend

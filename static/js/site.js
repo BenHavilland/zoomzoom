@@ -3,7 +3,7 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   $(function() {
-    var BreadcrumbView, Breadcrumbs, BreadcrumbsView, FullLogItemView, LogItem, LogItemView, LogItems, LogView, MainView, Notifier, NotifyView, Vehicle, VehicleAddLogView, VehicleAddView, VehicleEditLogView, VehicleList, VehicleView, Vehicles, VehiclesView, mainView, templates;
+    var BreadcrumbView, Breadcrumbs, BreadcrumbsView, FullLogItemView, LogItem, LogItemView, LogItems, LogView, MainView, Notifier, NotifyView, Vehicle, VehicleAddLogView, VehicleAddView, VehicleEditLogView, VehicleEditView, VehicleList, VehicleView, Vehicles, VehiclesView, mainView, templates;
     templates = {};
     templates.base = '<div class="header">\
     <h1>ZoomZoom</h1>\
@@ -31,6 +31,10 @@
     templates.vehicle_add = '<div class="view_container">\
     <input type="text" class="name" placeholder="Type new vehicle name" />\
     <button class="add_vehicle">Add Vehicle</button>\
+  </div>';
+    templates.vehicle_edit = '<div class="view_container">\
+    <input type="text" class="name" placeholder="Type new vehicle name" value="{{name}}" />\
+    <button class="save">Save</button>\
   </div>';
     templates.vehicle_log = '<div class="view_container">\
     <ul class="log"></ul>\
@@ -174,8 +178,6 @@
         return this;
       },
       success: function(message) {
-        console.log(message);
-        if (navigator.notification) navigator.notification.vibrate(100);
         $(this.el).children().removeClass('failure').addClass('success').fadeIn('slow', function() {
           return $(this).fadeOut('slow');
         });
@@ -204,6 +206,7 @@
       },
       events: {
         'click button.add_log_item': 'showAddLog',
+        'click button.edit': 'showEditVehicle',
         'click button.delete': 'delVehicle'
       },
       render: function() {
@@ -238,6 +241,14 @@
         });
         $('div#content').html(vehicleAddLogView.render().el);
         return Breadcrumbs.addOne("Add Log Item");
+      },
+      showEditVehicle: function() {
+        var vehicleEditView;
+        vehicleEditView = new VehicleEditView({
+          model: this.model
+        });
+        $('div#content').html(vehicleEditView.render().el);
+        return Breadcrumbs.addOne("Edit");
       },
       delVehicle: function() {
         var _this = this;
@@ -357,7 +368,10 @@
       },
       saveLogItem: function() {
         var form_vals, logItem;
-        if (!this.$('input.title').val()) return;
+        if (!this.$('input.title').val()) {
+          Notifier.failure("Title required");
+          return;
+        }
         form_vals = {};
         form_vals.vehicleId = this.model.id;
         _.each(this.$('input'), function(field) {
@@ -389,7 +403,10 @@
       },
       createLogItem: function() {
         var form_vals;
-        if (!this.$('input.title').val()) return;
+        if (!this.$('input.title').val()) {
+          Notifier.failure("Title required");
+          return;
+        }
         form_vals = {};
         form_vals.vehicleId = this.model.id;
         _.each(this.$('input'), function(field) {
@@ -486,12 +503,41 @@
       },
       createVehicle: function() {
         this.input_vehicle_name = this.$('input.name');
-        if (!this.input_vehicle_name.val()) return;
+        if (!this.input_vehicle_name.val()) {
+          Notifier.failure("Name required");
+          return;
+        }
         Vehicles.create({
           name: this.input_vehicle_name.val()
         });
         this.input_vehicle_name.val('');
         Notifier.success("Vehicle Added");
+        return this;
+      }
+    });
+    VehicleEditView = Backbone.View.extend({
+      tagName: "div",
+      classname: "vehicle_add",
+      template: templates.vehicle_edit,
+      events: {
+        'click button.save': 'saveVehicle'
+      },
+      render: function() {
+        $(this.el).html(Mustache.render(this.template, this.model.attributes));
+        return this;
+      },
+      saveVehicle: function() {
+        if (!this.$('input.name').val()) {
+          Notifier.failure("Name required");
+          return;
+        }
+        this.model.save({
+          name: this.$('input.name').val()
+        }, {
+          success: function() {
+            return Notifier.success("Log item saved");
+          }
+        });
         return this;
       }
     });
