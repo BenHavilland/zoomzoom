@@ -91,7 +91,6 @@ $ ->
   </div>'
 
   # Models
-  # coming soon...
   class Vehicle extends Backbone.Model
     name: "Vehicle"
     # make all vehicles awesome
