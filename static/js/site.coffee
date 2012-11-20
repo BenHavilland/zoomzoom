@@ -208,7 +208,7 @@ $ ->
       if logItems[0]
         _.each(logItems,@addOne,@)
       else
-        @$("ul.log").html "No log items."
+        @$("ul.log").html "No log items.  Add a log item."
       @
 
     showAddLog: ->
@@ -233,10 +233,15 @@ $ ->
             "Delete": =>
                 # clicked delete, delete the vehicle
                 $("div#dialog").dialog( "close" )
-                @model.destroy success: =>
-                  # remove from the ui on successful delete
-                  $(@el).remove()
-                  Notifier.success("Vehicle Deleted")
+                @model.destroy
+                  success: =>
+                    # remove from the ui on successful delete
+                    $(@el).remove()
+                    # report the success
+                    Notifier.success("Vehicle Deleted")
+                    # go to vehicle view
+                    vehiclesView = new VehiclesView
+                    $("div#content").html vehiclesView.el
             Cancel: ->
                 # clicked cancel, don't delete it. just close the dialog
                 $(@).dialog( "close" )
@@ -280,10 +285,12 @@ $ ->
             "Delete": =>
                 # clicked delete, delete the vehicle
                 $("div#dialog").dialog( "close" )
-                @model.destroy success: =>
-                  # remove from the ui on successful delete
-                  $(@el).remove()
-                  Notifier.success("Log Item Deleted")
+                @model.destroy
+                  wait: true
+                  success: (model) =>
+                    Breadcrumbs.stepBack(2)
+                    vehicleLogView = new LogView model:Vehicles.get model.get "vehicleId"
+                    $('div#content').html vehicleLogView.addAll().el
             Cancel: ->
                 # clicked cancel, don't delete it. just close the dialog
                 $(@).dialog( "close" )
@@ -425,7 +432,10 @@ $ ->
       addAll: ->
         # cycle through each vehicle and call addOne
         @render()
-        Vehicles.each(@addOne,@)
+        if Vehicles.length > 0
+          Vehicles.each(@addOne,@)
+        else
+          @$("ul.each_vehicle").html "No vehicles. Add a vehicle."
         @
 
       showAdd: ->
@@ -499,6 +509,16 @@ $ ->
     addOne: (model) ->
       breadcrumbView = new BreadcrumbView model:model
       $(@el).append breadcrumbView.render().el
+      @
+
+    stepBack: (maxDepth) ->
+      depth = 0
+      while maxDepth > depth
+        @removeLast()
+        depth++
+
+    removeLast: ->
+      $(':last-child',@el).remove()
       @
 
   # breadcrumbs global

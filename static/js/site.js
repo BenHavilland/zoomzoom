@@ -230,7 +230,7 @@
         if (logItems[0]) {
           _.each(logItems, this.addOne, this);
         } else {
-          this.$("ul.log").html("No log items.");
+          this.$("ul.log").html("No log items.  Add a log item.");
         }
         return this;
       },
@@ -263,8 +263,11 @@
               $("div#dialog").dialog("close");
               return _this.model.destroy({
                 success: function() {
+                  var vehiclesView;
                   $(_this.el).remove();
-                  return Notifier.success("Vehicle Deleted");
+                  Notifier.success("Vehicle Deleted");
+                  vehiclesView = new VehiclesView;
+                  return $("div#content").html(vehiclesView.el);
                 }
               });
             },
@@ -316,9 +319,14 @@
             "Delete": function() {
               $("div#dialog").dialog("close");
               return _this.model.destroy({
-                success: function() {
-                  $(_this.el).remove();
-                  return Notifier.success("Log Item Deleted");
+                wait: true,
+                success: function(model) {
+                  var vehicleLogView;
+                  Breadcrumbs.stepBack(2);
+                  vehicleLogView = new LogView({
+                    model: Vehicles.get(model.get("vehicleId"))
+                  });
+                  return $('div#content').html(vehicleLogView.addAll().el);
                 }
               });
             },
@@ -474,7 +482,11 @@
       },
       addAll: function() {
         this.render();
-        Vehicles.each(this.addOne, this);
+        if (Vehicles.length > 0) {
+          Vehicles.each(this.addOne, this);
+        } else {
+          this.$("ul.each_vehicle").html("No vehicles. Add a vehicle.");
+        }
         return this;
       },
       showAdd: function() {
@@ -555,6 +567,20 @@
           model: model
         });
         $(this.el).append(breadcrumbView.render().el);
+        return this;
+      },
+      stepBack: function(maxDepth) {
+        var depth, _results;
+        depth = 0;
+        _results = [];
+        while (maxDepth > depth) {
+          this.removeLast();
+          _results.push(depth++);
+        }
+        return _results;
+      },
+      removeLast: function() {
+        $(':last-child', this.el).remove();
         return this;
       }
     });

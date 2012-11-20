@@ -14,6 +14,10 @@ An auto/moto maintenance tracker written in coffeescript w/ backbone.js framewor
 Open index.html in your browser.
 
 ## Status
+11-19-2012
+* Wrapped up models and views
+* Added visual alert for saves and deletes
+
 11-07-2012
 * Hooked up the log items to save all fields
 * Added log item deletion method
@@ -57,8 +61,4 @@ Open index.html in your browser.
 10-27-2012
 * First commit
 * Basic app display works
-
-## To-do
-* Tweak views for logs
-* Include mobile builds from PhoneGap
 
