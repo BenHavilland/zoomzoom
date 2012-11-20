@@ -24,8 +24,8 @@ Open index.html in your browser.
 
 ## Status
 11-20-2012
-v1.0 released
-Get the android app here: https://play.google.com/store/apps/details?id=com.clickyspinny_zoomzoom
+* v1.0 released
+* Get the android app here: https://play.google.com/store/apps/details?id=com.clickyspinny_zoomzoom
 
 11-19-2012
 * Wrapped up models and views
