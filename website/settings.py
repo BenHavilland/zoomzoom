@@ -1,4 +1,6 @@
 # Django settings for website project.
+import os
+import dj_database_url
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -149,3 +151,11 @@ LOGGING = {
         },
     }
 }
+
+SITE_URL = 'http://www.clickyspinny.com'
+
+try:
+    from local_settings import *
+except ImportError:
+    """NO LOCAL"""
+    #print >> sys.stderr, "Could not import local settings, using defaults."
