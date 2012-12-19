@@ -10,30 +10,37 @@ $ ->
   <a class="fork-me" href="https://github.com/clickyspinny">
     <img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png" alt="Fork me on GitHub">
   </a>
-  <a href="https://github.com/clickyspinny">
+  <span class="floating-head">
     <img src="static/img/floating_head_ben_crop_nohand.png" class="floating-head" />
     <img src="static/img/floating_head_ben_crop.png" class="floating-head-hand" />
-  </a>
+  </span>
   '
+
+  templates.projects =
+  ''
 
   # Views
   BenView = Backbone.View.extend
-    tagName: 'div'
+    tagName: 'span'
     className: 'face'
     template: templates.ben
 
     events:
-      'hover': 'swapHeads'
+      'hover': 'swapBens'
+      'click': 'toggleLink'
 
     render: ->
       $(@el).html @template
       @
 
-    swapHeads: ->
+    swapBens: ->
       $('img.floating-head',@el).toggle()
       $('img.floating-head-hand',@el).toggle()
-      $('a.fork-me',@el).toggle()
       @swapLog()
+      @
+
+    toggleLink: ->
+      $('a.fork-me',@el).toggle()
       @
 
     swapLog: ->
