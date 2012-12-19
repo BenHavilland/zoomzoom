@@ -1,0 +1,159 @@
+html {
+  font-family: lucida grande;
+  height: 98%;
+}
+
+body {
+  margin: 1em;
+  padding-bottom: 1em;
+  height: 90%;
+}
+
+h1 {
+  margin: 0;
+}
+
+h3 {
+  margin: 0;
+  display: inline;
+}
+
+
+input {
+  display: block;
+  width: 90%;
+}
+
+textarea {
+  display: block;
+  width: 90%;
+}
+
+.header {
+  margin: 0em 1em 1em 0em;
+  padding-bottom: 1em;
+  border-bottom: solid gray;
+}
+
+span.menu {
+  display:block;
+}
+
+li.menu {
+  border-bottom: dashed gray 1px;
+  padding: .55em 0 .15em 0;
+  margin: .15em 0 0 0;
+  list-style-type: none;
+  min-width: 275px;
+  min-height: 1.5em;
+  height: auto;
+  width: 100%;
+}
+
+ul.each_vehicle {
+  width: 100%;
+  margin: 0 0 1em 0;
+  padding: 0;
+}
+
+ul.log {
+  width: 100%;
+  margin: 0 0 1em 0;
+  padding: 0;
+}
+
+span.menu:hover {
+  cursor: pointer;
+}
+
+div#dialog {
+  display: none;
+}
+
+div.view_container {
+  display: inline-block;
+  width: 100%;
+  margin-bottom: 1em;
+}
+
+.title {
+  display: block;
+}
+
+.title :hover {
+  cursor: pointer;
+}
+
+ul.breadcrumbs {
+  padding: 0;
+  margin: 0;
+}
+
+li.breadcrumb {
+  border-top: solid 1px gray;
+  border-bottom: solid 1px gray;
+  border-right: solid 1px gray;
+  display: block;
+  padding: .75em;
+  margin: 0;
+  background: lightgray;
+  left: 0px;
+}
+
+li.breadcrumb:last-child {
+  border: none;
+  background: none;
+  font-size: 1.17em;
+  font-weight: bold;
+  padding-left: 0;
+  margin-left: 0;
+}
+
+li.breadcrumb:hover {
+  cursor: pointer;
+  background: #999999;
+}
+
+li.breadcrumb:last-child:hover {
+  background: none;
+  cursor: default;
+}
+
+.success {
+  background: green;
+}
+
+.failure {
+  background: red;
+}
+
+#top, #bottom, #left, #right {
+  position: fixed;
+  display: none;
+}
+
+#left, #right {
+  top: 0; bottom: 0;
+  width: 5px;
+}
+
+#left {
+  left: 0;
+}
+
+#right {
+  right: 0;
+}
+
+#top, #bottom {
+  left: 0; right: 0;
+  height: 5px;
+}
+
+#top {
+  top: 0;
+}
+
+#bottom {
+  bottom: 0;
+}

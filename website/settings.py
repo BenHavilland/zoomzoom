@@ -109,7 +109,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(STATIC_ROOT, '')
+    os.path.join(STATIC_ROOT, ''),
 )
 
 INSTALLED_APPS = (
@@ -161,3 +161,6 @@ try:
 except ImportError:
     """NO LOCAL"""
     #print >> sys.stderr, "Could not import local settings, using defaults."
+
+# add zoom zoom app
+ZOOMZOOM_PATH = '/static/zoomzoom/index.html'

@@ -18,7 +18,8 @@
       className: 'face',
       template: templates.ben,
       events: {
-        'hover': 'swapHeads'
+        'hover': 'swapHeads',
+        'click': 'swapHeads'
       },
       render: function() {
         $(this.el).html(this.template);
