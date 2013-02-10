@@ -1,3 +1,8 @@
+body {
+  font-family: sans-serif;
+  line-height: 1.6em;
+}
+
 img.floating-head-hand {
   display: none;
 }
@@ -6,12 +11,31 @@ a.fork-me {
   display:none;
 }
 
-span.face {
+div.face {
   float: left;
+  margin-left: 100px;
+  margin-top: 80px;
+}
+
+div.face :hover{
+  cursor: pointer;
 }
 
 span.floating-head {
   position: relative;
-  top: 50px;
-  left: 100px;
+}
+
+div.projects {
+  float: left;
+  margin-left: 3em;
+}
+
+div.projects li {
+  margin-bottom: 1em;
+  margin-left: 1em;
+  list-style: none;
+}
+
+div.projects li a {
+  margin-left: 1em;
 }

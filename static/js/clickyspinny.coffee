@@ -18,10 +18,21 @@ $ ->
 
   templates.projects =
   '<h2>Projects</h2>
-  <li>Zoom Zoom: Backbone.js + Coffeescript app.</li>
-  <li>another</li>
-  <li>another</li>
-  <li>another</li>
+  <li>
+    Fog Fudge: Mezzanine, Cartridge, venv, heroku deploy<br />
+    <a href="http://fogfudge.heroku.com">fogfudge.com</a><br />
+    <a href="https://github.com/clickyspinny/fogfudge">github.com/clickyspinny/fogfudge</a>
+  </li>
+  <li>
+    Zoom Zoom: Backbone.js + Coffeescript app.<br />
+    <a href="http://clickyspinny.com/zoomzoom/">clickyspinny.com/zoomzoom/</a><br />
+    <a href="https://github.com/clickyspinny/zoomzoom">github.com/clickyspinny/zoomzoom</a>
+  </li>
+  <li>
+    clickyspinny: This site silly. Backbone.js + Coffeescript app, venv, heroku deploy<br />
+    <a href="http://clickyspinny.com">clickyspinny.com</a><br />
+    <a href="https://github.com/clickyspinny/clickyspinny.com">github.com/clickyspinny/clickyspinny.com</a>
+  </li>
   '
 
   ### Views ###
@@ -33,6 +44,7 @@ $ ->
 
     initialize: ->
       @benView = new BenView
+      @projectsView = new ProjectsView
 
     render: ->
       $(@el).html @template
@@ -40,10 +52,11 @@ $ ->
 
     addContent: ->
       $("div#content", @el).append @benView.render().el
+      $("div#content", @el).append @projectsView.render().el
       @
 
   BenView = Backbone.View.extend
-    tagName: 'span'
+    tagName: 'div'
     className: 'face'
     template: templates.ben
 
@@ -69,6 +82,16 @@ $ ->
       # We'll add a log message in later, prob as a speech bubble close to my head
       #console.log "Yeah, I got that trendy Git-Hub thing up there."
       @
+
+  ProjectsView = Backbone.View.extend
+    tagName: 'div'
+    className: 'projects'
+    template: templates.projects
+
+    render: ->
+      $(@el).html @template
+      @
+
 
   # Create the app
   mainView = new MainView
