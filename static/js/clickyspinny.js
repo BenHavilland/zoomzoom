@@ -35,7 +35,7 @@
     templates.fogfudge = '<h2>FOG FUDGE&trade;</h2>\
   <ul>\
   <li>\
-    Fog Fudge: Mezzanine, Cartridge, venv, heroku deploy<br />\
+    Mezzanine, Cartridge, venv, heroku deploy<br />\
     <a href="http://fogfudge.heroku.com">fogfudge.com</a><br />\
     <a href="https://github.com/clickyspinny/fogfudge">github.com/clickyspinny/fogfudge</a>\
   </li>\
@@ -72,15 +72,17 @@
     FOG FUDGE&trade;\
   </li>\
   </a>\
-  <!-- <a href="#zoomzoom">\
+  <a href="#zoomzoom">\
   <li>\
     ZOOM ZOOM\
-  </li> -->\
+  </li>\
+  <!--\
   <a href="#wifishelter">\
   <li>\
     WIFI SHELTER\
   </li>\
-  </a><a href="#clickyspinny">\
+  </a> -->\
+  <a href="#clickyspinny">\
   <li>\
     CLICKYSPINNY\
   </li>\
@@ -159,8 +161,7 @@
       className: 'face',
       template: templates.ben,
       events: {
-        'hover': 'swapBens',
-        'click': 'toggleLink'
+        'hover': 'swapBens'
       },
       render: function() {
         $(this.el).html(this.template);
@@ -170,10 +171,6 @@
         $('img.floating-head', this.el).toggle();
         $('img.floating-head-hand', this.el).toggle();
         this.swapLog();
-        return this;
-      },
-      toggleLink: function() {
-        $('a.fork-me', this.el).toggle();
         return this;
       },
       swapLog: function() {
