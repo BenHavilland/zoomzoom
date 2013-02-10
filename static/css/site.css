@@ -17,27 +17,23 @@ a.fork-me {
   /* display:none; */
 }
 
-div.face {
+div.ben {
   float: left;
-  margin-left: 100px;
+  margin-left: 50px;
   margin-top: 80px;
 }
 
-div.face :hover{
+div.ben :hover{
   /* cursor: pointer; */
 }
 
 span.floating-head {
-  position: relative;
-}
-
-div#main-container {
-  float: left;
-  width: 50%;
+  position: absolute; top: 0; left: 0; border: 0; z-index: 1030;
+  margin-left: 80px;
+  margin-top: 60px;
 }
 
 div.projects {
-  float: left;
   margin-left: 1em;
 }
 

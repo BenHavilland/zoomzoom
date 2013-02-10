@@ -3,10 +3,10 @@
   $(function() {
     var BenView, ClickySpinner, ClickySpinnyView, CodeProjectsView, FogFudgeView, MainMenuView, MainView, WifiShelterView, ZoomZoomView, templates;
     templates = {};
-    templates.base = '<div id="content"><div id="ben"></div><div id="main-container"></div><div id="menu"></div></div>';
+    templates.base = '<div id="content"><div id="main-container"></div><div id="menu"></div></div>';
     templates.ben = '\
   <a class="fork-me" href="https://github.com/clickyspinny">\
-    <img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png" alt="Fork me on GitHub">\
+    <img style="position: absolute; top: 0; left: 0; border: 0; z-index: 1030;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png" alt="Fork me on GitHub">\
   </a>\
   <span class="floating-head">\
     <img src="static/img/floating_head_ben_crop_nohand.png" class="floating-head" />\
@@ -26,7 +26,7 @@
     <a href="https://github.com/clickyspinny/zoomzoom">github.com/clickyspinny/zoomzoom</a>\
   </li>\
   <li>\
-    CLICKYSPINNY: This site silly. Backbone.js, Coffeescript, venv, heroku deploy<br />\
+    CLICKYSPINNY: This site silly. Backbone.js, Coffeescript, Twitter Bootstrap, venv, heroku deploy<br />\
     <a href="http://clickyspinny.com">clickyspinny.com</a><br />\
     <a href="https://github.com/clickyspinny/clickyspinny.com">github.com/clickyspinny/clickyspinny.com</a>\
   </li>\
@@ -59,9 +59,11 @@
     templates.clickyspinny = '<h2>CLICKYSPINNY</h2>\
   <ul>\
   <li>\
-    This site silly. Backbone.js, Coffeescript, venv, heroku deploy<br />\
+    <p>\
+    This site silly. Backbone.js, Coffeescript, Twitter Bootstrap, venv, heroku deploy<br />\
     <a href="http://clickyspinny.com">clickyspinny.com</a><br />\
     <a href="https://github.com/clickyspinny/clickyspinny.com">github.com/clickyspinny/clickyspinny.com</a>\
+    </p>\
   </li>\
   </ul>\
   ';
@@ -140,25 +142,23 @@
     /* Views
     */
     MainView = Backbone.View.extend({
-      el: $("body"),
+      el: $("div.hero-unit"),
       template: templates.base,
       initialize: function() {
-        this.benView = new BenView;
-        return this.mainMenuView = new MainMenuView;
+        return this.benView = new BenView;
       },
       render: function() {
         $(this.el).html(this.template);
         return this;
       },
       addContent: function() {
-        $("div#ben", this.el).html(this.benView.render().el);
-        $("div#menu", this.el).html(this.mainMenuView.render().el);
+        $("div#ben").html(this.benView.render().el);
         return this;
       }
     });
     BenView = Backbone.View.extend({
       tagName: 'div',
-      className: 'face',
+      className: 'ben',
       template: templates.ben,
       events: {
         'hover': 'swapBens'
