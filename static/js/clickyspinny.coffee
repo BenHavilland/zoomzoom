@@ -17,9 +17,31 @@ $ ->
   '
 
   templates.projects =
-  ''
+  '<h2>Projects</h2>
+  <li>Zoom Zoom: Backbone.js + Coffeescript app.</li>
+  <li>another</li>
+  <li>another</li>
+  <li>another</li>
+  '
 
-  # Views
+  ### Views ###
+
+  # App Loader View
+  MainView = Backbone.View.extend
+    el: $("body")
+    template: templates.base
+
+    initialize: ->
+      @benView = new BenView
+
+    render: ->
+      $(@el).html @template
+      @
+
+    addContent: ->
+      $("div#content", @el).append @benView.render().el
+      @
+
   BenView = Backbone.View.extend
     tagName: 'span'
     className: 'face'
@@ -46,22 +68,6 @@ $ ->
     swapLog: ->
       # We'll add a log message in later, prob as a speech bubble close to my head
       #console.log "Yeah, I got that trendy Git-Hub thing up there."
-      @
-
-  # App Loader View
-  MainView = Backbone.View.extend
-    el: $("body")
-    template: templates.base
-
-    initialize: ->
-      @benView = new BenView
-
-    render: ->
-      $(@el).html @template
-      @
-
-    addContent: ->
-      $("div#content", @el).append @benView.render().el
       @
 
   # Create the app
