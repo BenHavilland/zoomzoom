@@ -1,7 +1,7 @@
 (function() {
 
   $(function() {
-    var BenView, MainView, ProjectsView, mainView, templates;
+    var BenView, CodeProjectsView, MainView, mainView, templates;
     templates = {};
     templates.base = '<div id="content"></div>';
     templates.ben = '\
@@ -13,19 +13,19 @@
     <img src="static/img/floating_head_ben_crop.png" class="floating-head-hand" />\
   </span>\
   ';
-    templates.projects = '<h2>Projects</h2>\
+    templates.code_projects = '<h2>Code Projects</h2>\
   <li>\
     Fog Fudge: Mezzanine, Cartridge, venv, heroku deploy<br />\
     <a href="http://fogfudge.heroku.com">fogfudge.com</a><br />\
     <a href="https://github.com/clickyspinny/fogfudge">github.com/clickyspinny/fogfudge</a>\
   </li>\
   <li>\
-    Zoom Zoom: Backbone.js + Coffeescript app.<br />\
+    Zoom Zoom: Backbone.js + Coffeescript<br />\
     <a href="http://clickyspinny.com/zoomzoom/">clickyspinny.com/zoomzoom/</a><br />\
     <a href="https://github.com/clickyspinny/zoomzoom">github.com/clickyspinny/zoomzoom</a>\
   </li>\
   <li>\
-    clickyspinny: This site silly. Backbone.js + Coffeescript app, venv, heroku deploy<br />\
+    clickyspinny: This site silly. Backbone.js, Coffeescript, venv, heroku deploy<br />\
     <a href="http://clickyspinny.com">clickyspinny.com</a><br />\
     <a href="https://github.com/clickyspinny/clickyspinny.com">github.com/clickyspinny/clickyspinny.com</a>\
   </li>\
@@ -37,7 +37,7 @@
       template: templates.base,
       initialize: function() {
         this.benView = new BenView;
-        return this.projectsView = new ProjectsView;
+        return this.codeProjectsView = new CodeProjectsView;
       },
       render: function() {
         $(this.el).html(this.template);
@@ -45,7 +45,7 @@
       },
       addContent: function() {
         $("div#content", this.el).append(this.benView.render().el);
-        $("div#content", this.el).append(this.projectsView.render().el);
+        $("div#content", this.el).append(this.codeProjectsView.render().el);
         return this;
       }
     });
@@ -75,10 +75,10 @@
         return this;
       }
     });
-    ProjectsView = Backbone.View.extend({
+    CodeProjectsView = Backbone.View.extend({
       tagName: 'div',
       className: 'projects',
-      template: templates.projects,
+      template: templates.code_projects,
       render: function() {
         $(this.el).html(this.template);
         return this;

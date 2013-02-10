@@ -16,20 +16,20 @@ $ ->
   </span>
   '
 
-  templates.projects =
-  '<h2>Projects</h2>
+  templates.code_projects =
+  '<h2>Code Projects</h2>
   <li>
     Fog Fudge: Mezzanine, Cartridge, venv, heroku deploy<br />
     <a href="http://fogfudge.heroku.com">fogfudge.com</a><br />
     <a href="https://github.com/clickyspinny/fogfudge">github.com/clickyspinny/fogfudge</a>
   </li>
   <li>
-    Zoom Zoom: Backbone.js + Coffeescript app.<br />
+    Zoom Zoom: Backbone.js + Coffeescript<br />
     <a href="http://clickyspinny.com/zoomzoom/">clickyspinny.com/zoomzoom/</a><br />
     <a href="https://github.com/clickyspinny/zoomzoom">github.com/clickyspinny/zoomzoom</a>
   </li>
   <li>
-    clickyspinny: This site silly. Backbone.js + Coffeescript app, venv, heroku deploy<br />
+    clickyspinny: This site silly. Backbone.js, Coffeescript, venv, heroku deploy<br />
     <a href="http://clickyspinny.com">clickyspinny.com</a><br />
     <a href="https://github.com/clickyspinny/clickyspinny.com">github.com/clickyspinny/clickyspinny.com</a>
   </li>
@@ -44,7 +44,7 @@ $ ->
 
     initialize: ->
       @benView = new BenView
-      @projectsView = new ProjectsView
+      @codeProjectsView = new CodeProjectsView
 
     render: ->
       $(@el).html @template
@@ -52,7 +52,7 @@ $ ->
 
     addContent: ->
       $("div#content", @el).append @benView.render().el
-      $("div#content", @el).append @projectsView.render().el
+      $("div#content", @el).append @codeProjectsView.render().el
       @
 
   BenView = Backbone.View.extend
@@ -83,10 +83,10 @@ $ ->
       #console.log "Yeah, I got that trendy Git-Hub thing up there."
       @
 
-  ProjectsView = Backbone.View.extend
+  CodeProjectsView = Backbone.View.extend
     tagName: 'div'
     className: 'projects'
-    template: templates.projects
+    template: templates.code_projects
 
     render: ->
       $(@el).html @template

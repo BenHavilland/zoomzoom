@@ -28,6 +28,7 @@ span.floating-head {
 div.projects {
   float: left;
   margin-left: 3em;
+  width: 25%
 }
 
 div.projects li {
