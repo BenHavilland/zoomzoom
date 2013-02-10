@@ -32,7 +32,7 @@ $ ->
   <li>
     CLICKYSPINNY: This site silly. Backbone.js, Coffeescript, Twitter Bootstrap, venv, heroku deploy<br />
     <a href="http://clickyspinny.com">clickyspinny.com</a><br />
-    <a href="https://github.com/clickyspinny/clickyspinny.com">github.com/clickyspinny/clickyspinny.com</a>
+    <a href="https://github.com/clickyspinny/clickyspinny">github.com/clickyspinny/clickyspinny</a>
   </li>
   </ul>
   '
@@ -74,7 +74,7 @@ $ ->
     <p>
     This site silly. Backbone.js, Coffeescript, Twitter Bootstrap, venv, heroku deploy<br />
     <a href="http://clickyspinny.com">clickyspinny.com</a><br />
-    <a href="https://github.com/clickyspinny/clickyspinny.com">github.com/clickyspinny/clickyspinny.com</a>
+    <a href="https://github.com/clickyspinny/clickyspinny">github.com/clickyspinny/clickyspinny</a>
     </p>
   </li>
   </ul>
