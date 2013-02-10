@@ -33,6 +33,7 @@ span.floating-head {
 
 div#main-container {
   float: left;
+  width: 50%;
 }
 
 div.projects {
@@ -57,8 +58,6 @@ div.projects li a {
 div.main-menu {
   float: right;
   margin-right: 3.1em;
-  min-width: 25%;
-  max-width: 100%;
 }
 
 div.main-menu li {
