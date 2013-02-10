@@ -25,10 +25,14 @@ span.floating-head {
   position: relative;
 }
 
+div#main-container {
+  width: 46%
+  float: left;
+}
+
 div.projects {
   float: left;
   margin-left: 3em;
-  width: 25%
 }
 
 div.projects li {
@@ -39,4 +43,34 @@ div.projects li {
 
 div.projects li a {
   margin-left: 1em;
+}
+
+div.main-menu {
+  float: right;
+  width: 25%;
+}
+
+div.main-menu li {
+  font-size: 1.7em;
+  font-weight: bold;
+  color: #FFFFFF;
+  padding: 1em;
+  margin: .1em;
+  list-style: none;
+  background-color: #AC2832;
+}
+
+div.main-menu li:hover {
+  list-style: none;
+  background-color: #DFD297;
+  cursor: pointer;
+}
+
+div.main-menu a {
+  text-decoration: none;
+  color: #ffffff;
+}
+
+div.main-menu a:visited {
+  color: #ffffff;
 }

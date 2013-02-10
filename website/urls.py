@@ -14,7 +14,7 @@ urlpatterns = patterns('django.views.generic.simple',
 
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
-    url(r'^$', 'direct_to_template', {'template': 'index.html'}),
+    url(r'^.*', 'direct_to_template', {'template': 'index.html'}),
     url(r'^zoomzoom/(?P<path>.*)$', 'redirect_to', {'url': settings.ZOOMZOOM_PATH}),
 )
 

@@ -4,7 +4,7 @@ $ ->
   # Templates=
   templates = {}
   templates.base =
-  '<div id="content"></div>'
+  '<div id="content"><div id="ben"></div><div id="main-container"></div><div id="menu"></div></div>'
   templates.ben =
   '
   <a class="fork-me" href="https://github.com/clickyspinny">
@@ -17,24 +17,141 @@ $ ->
   '
 
   templates.code_projects =
-  '<h2>Code Projects</h2>
+  '<h2>PROJECTS</h2>
+  <ul>
+  <li>
+    FOG FUDGE&trade;: Mezzanine, Cartridge, venv, heroku deploy<br />
+    <a href="http://fogfudge.heroku.com">fogfudge.com</a><br />
+    <a href="https://github.com/clickyspinny/fogfudge">github.com/clickyspinny/fogfudge</a>
+  </li>
+  <li>
+    ZOOM ZOOM: Backbone.js + Coffeescript<br />
+    <a href="http://clickyspinny.com/zoomzoom/">clickyspinny.com/zoomzoom/</a><br />
+    <a href="https://github.com/clickyspinny/zoomzoom">github.com/clickyspinny/zoomzoom</a>
+  </li>
+  <li>
+    CLICKYSPINNY: This site silly. Backbone.js, Coffeescript, venv, heroku deploy<br />
+    <a href="http://clickyspinny.com">clickyspinny.com</a><br />
+    <a href="https://github.com/clickyspinny/clickyspinny.com">github.com/clickyspinny/clickyspinny.com</a>
+  </li>
+  </ul>
+  '
+
+  templates.fogfudge =
+  '<h2>FOG FUDGE&trade;</h2>
+  <ul>
   <li>
     Fog Fudge: Mezzanine, Cartridge, venv, heroku deploy<br />
     <a href="http://fogfudge.heroku.com">fogfudge.com</a><br />
     <a href="https://github.com/clickyspinny/fogfudge">github.com/clickyspinny/fogfudge</a>
   </li>
+  </ul>
+  '
+
+  templates.zoomzoom =
+  '<h2>ZOOM ZOOM</h2>
+  <ul>
   <li>
-    Zoom Zoom: Backbone.js + Coffeescript<br />
+    Backbone.js + Coffeescript<br />
     <a href="http://clickyspinny.com/zoomzoom/">clickyspinny.com/zoomzoom/</a><br />
     <a href="https://github.com/clickyspinny/zoomzoom">github.com/clickyspinny/zoomzoom</a>
   </li>
+  </ul>
+  '
+
+  templates.wifishelter =
+  '<h2>WIFI SHELTER</h2>
+  <ul>
+    <a href="http://www.wifishelter.com">wifishelter.com</a>
+  </li>
+  </ul>
+  '
+
+  templates.clickyspinny =
+  '<h2>CLICKYSPINNY</h2>
+  <ul>
   <li>
-    clickyspinny: This site silly. Backbone.js, Coffeescript, venv, heroku deploy<br />
+    This site silly. Backbone.js, Coffeescript, venv, heroku deploy<br />
     <a href="http://clickyspinny.com">clickyspinny.com</a><br />
     <a href="https://github.com/clickyspinny/clickyspinny.com">github.com/clickyspinny/clickyspinny.com</a>
   </li>
+  </ul>
   '
 
+  templates.main_menu =
+  '
+  <ul>
+  <a href="#fogfudge">
+  <li>
+    FOG FUDGE&trade;
+  </li>
+  </a>
+  <!-- <a href="#zoomzoom">
+  <li>
+    ZOOM ZOOM
+  </li> -->
+  <a href="#wifishelter">
+  <li>
+    WIFI SHELTER
+  </li>
+  </a><a href="#clickyspinny">
+  <li>
+    CLICKYSPINNY
+  </li>
+  </a>
+  </ul>
+  '
+
+  ### Router ###
+  ClickySpinner = Backbone.Router.extend
+  
+    initialize: (options) ->
+      # Create the app
+      @mainView = new MainView
+      @mainView.render().addContent()
+      @codeProjectsView = new CodeProjectsView
+      @fogFudgeView = new FogFudgeView
+      @zoomZoomView = new ZoomZoomView
+      @clickySpinnyView = new ClickySpinnyView
+      @wifiShelterView = new WifiShelterView
+    
+    routes:
+      "code": "code"
+      "fogfudge":"fogfudge"
+      "zoomzoom": "zoomzoom"
+      "clickyspinny": "clickyspinny"
+      "wifishelter":"wifishelter"
+      "": "code"
+      "*actions":"defaultRoute"
+
+    code: ->
+      $("div#main-container").html @codeProjectsView.render().el
+      @
+
+    fogfudge: ->
+      $("div#main-container").html @fogFudgeView.render().el
+      @
+
+    zoomzoom: ->
+      $("div#main-container").html @zoomZoomView.render().el
+      @
+
+    clickyspinny: ->
+      $("div#main-container").html @clickySpinnyView.render().el
+      @
+
+    wifishelter: ->
+      $("div#main-container").html @wifiShelterView.render().el
+      @
+
+    defaultRoute: (clicked) ->
+      console.log @
+      $("div#main-container").html ""
+      # envoke route here
+      #$("div#main-container").html "<div class='projects'><h2>"+clicked.toElement.innerText+"</h2></div>"
+      console.log clicked
+      @
+  
   ### Views ###
 
   # App Loader View
@@ -44,15 +161,16 @@ $ ->
 
     initialize: ->
       @benView = new BenView
-      @codeProjectsView = new CodeProjectsView
+      @mainMenuView = new MainMenuView
 
     render: ->
       $(@el).html @template
       @
 
     addContent: ->
-      $("div#content", @el).append @benView.render().el
-      $("div#content", @el).append @codeProjectsView.render().el
+      $("div#ben", @el).html @benView.render().el
+      #$("div#main-container", @el).html @codeProjectsView.render().el
+      $("div#menu", @el).html @mainMenuView.render().el
       @
 
   BenView = Backbone.View.extend
@@ -92,7 +210,52 @@ $ ->
       $(@el).html @template
       @
 
+  FogFudgeView = Backbone.View.extend
+    tagName: 'div'
+    className: 'projects'
+    template: templates.fogfudge
 
-  # Create the app
-  mainView = new MainView
-  mainView.render().addContent()
+    render: ->
+      $(@el).html @template
+      @
+
+  ClickySpinnyView = Backbone.View.extend
+    tagName: 'div'
+    className: 'projects'
+    template: templates.clickyspinny
+
+    render: ->
+      $(@el).html @template
+      @
+
+  ZoomZoomView = Backbone.View.extend
+    tagName: 'div'
+    className: 'projects'
+    template: templates.zoomzoom
+
+    render: ->
+      $(@el).html @template
+      @
+
+  WifiShelterView = Backbone.View.extend
+    tagName: 'div'
+    className: 'projects'
+    template: templates.wifishelter
+
+    render: ->
+      $(@el).html @template
+      @
+
+  MainMenuView = Backbone.View.extend
+    tagName: 'div'
+    className: 'main-menu'
+    template: templates.main_menu
+
+    render: ->
+      $(@el).html @template
+      @
+
+  @clickySpinner = new ClickySpinner
+
+  #Start Backbone history a necessary step for bookmarkable URL's
+  Backbone.history.start()
