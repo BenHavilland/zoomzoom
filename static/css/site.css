@@ -1,6 +1,12 @@
 body {
   font-family: sans-serif;
   line-height: 1.6em;
+  margin-top: 0;
+}
+
+ul {
+   margin: 0;
+   padding: 0;
 }
 
 img.floating-head-hand {
@@ -32,12 +38,16 @@ div#main-container {
 
 div.projects {
   float: left;
-  margin-left: 3em;
+  margin-left: 1em;
+}
+
+div.projects ul {
+  margin: none;
 }
 
 div.projects li {
   margin-bottom: 1em;
-  margin-left: 1em;
+  margin-left: .1em;
   list-style: none;
 }
 
@@ -47,10 +57,13 @@ div.projects li a {
 
 div.main-menu {
   float: right;
-  width: 25%;
+  margin-right: 3.1em;
+  min-width: 25%;
+  max-width: 100%;
 }
 
 div.main-menu li {
+  width: 100%;
   font-size: 1.7em;
   font-weight: bold;
   color: #FFFFFF;

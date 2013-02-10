@@ -42,7 +42,7 @@ $ ->
   <ul>
   <li>
     Mezzanine, Cartridge, venv, heroku deploy<br />
-    <a href="http://fogfudge.heroku.com">fogfudge.com</a><br />
+    <a href="http://www.fogfudge.com">fogfudge.com</a><br />
     <a href="https://github.com/clickyspinny/fogfudge">github.com/clickyspinny/fogfudge</a>
   </li>
   </ul>
