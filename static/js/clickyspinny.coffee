@@ -8,12 +8,14 @@ $ ->
   templates.ben =
   '
   <a class="fork-me" href="https://github.com/clickyspinny">
-    <img style="position: absolute; top: 0; left: 0; border: 0; z-index: 1030;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png" alt="Fork me on GitHub">
+    <img style="position: fixed; top: 0; right: 0; border: 0; z-index: 1030;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png" alt="Fork me on GitHub">
   </a>
+  <!--
   <span class="floating-head">
     <img src="static/img/floating_head_ben_crop_nohand.png" class="floating-head" />
     <img src="static/img/floating_head_ben_crop.png" class="floating-head-hand" />
   </span>
+  -->
   '
 
   templates.code_projects =
