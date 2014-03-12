@@ -28,7 +28,8 @@ $ ->
   </li>
   <li>
     ZOOM ZOOM: Backbone.js + Coffeescript<br />
-    <a href="http://clickyspinny.com/static/zoomzoom/index.html">clickyspinny.com/static/zoomzoom/</a><br />
+    <a href="https://play.google.com/store/apps/details?id=com.clickyspinny_zoomzoom">Get the Android App!</a><br />
+    <a href="http://clickyspinny.com/static/zoomzoom/index.html">Use Zoom Zoom right now</a><br />
     <a href="https://github.com/clickyspinny/zoomzoom">github.com/clickyspinny/zoomzoom</a>
   </li>
   <li>
@@ -55,7 +56,8 @@ $ ->
   <ul>
   <li>
     Backbone.js + Coffeescript<br />
-    <a href="http://clickyspinny.com/static/zoomzoom/index.html">clickyspinny.com/static/zoomzoom/</a><br />
+    <a href="https://play.google.com/store/apps/details?id=com.clickyspinny_zoomzoom">Get the Android App!</a><br />
+    <a href="http://clickyspinny.com/static/zoomzoom/index.html">Use Zoom Zoom right now</a><br />
     <a href="https://github.com/clickyspinny/zoomzoom">github.com/clickyspinny/zoomzoom</a>
   </li>
   </ul>
